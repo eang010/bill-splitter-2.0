@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import ReceiptProcessor from "./receipt-processor"
 
 interface BillItem {
   id: string
@@ -21,7 +20,7 @@ export default function BillSplitComponent() {
   const [billItems, setBillItems] = useState<BillItem[]>([])
   const [names, setNames] = useState<string[]>([])
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
-  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   useEffect(() => {
     // Load names from localStorage
@@ -32,8 +31,24 @@ export default function BillSplitComponent() {
       }
     }
 
+    // Load bill items from localStorage
+    const loadBillItems = () => {
+      const savedItems = localStorage.getItem("billSplitterItems")
+      if (savedItems) {
+        const items = JSON.parse(savedItems)
+        setBillItems(items)
+        // Dispatch event to notify other components
+        const event = new CustomEvent("updateBillItems", {
+          detail: items,
+        })
+        document.dispatchEvent(event)
+      }
+    }
+
     // Initial load
     loadNames()
+    loadBillItems()
+    setIsInitialized(true)
 
     // Listen for name updates
     const handleNameUpdate = (event: Event) => {
@@ -46,32 +61,34 @@ export default function BillSplitComponent() {
       }
     }
 
-    // Listen for receipt upload button click
-    const handleReceiptUploadClick = () => {
-      setIsUploadDialogOpen(true)
+    // Listen for bill items updates
+    const handleBillItemsUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<BillItem[]>
+      if (customEvent.detail) {
+        setBillItems(customEvent.detail)
+        // Save to localStorage
+        localStorage.setItem("billSplitterItems", JSON.stringify(customEvent.detail))
+      }
     }
 
     document.addEventListener("updateNames", handleNameUpdate)
-    document.addEventListener("receiptUploadClick", handleReceiptUploadClick)
+    document.addEventListener("updateBillItems", handleBillItemsUpdate as EventListener)
 
     return () => {
       document.removeEventListener("updateNames", handleNameUpdate)
-      document.removeEventListener("receiptUploadClick", handleReceiptUploadClick)
+      document.removeEventListener("updateBillItems", handleBillItemsUpdate as EventListener)
     }
   }, [])
 
   // Dispatch bill items updates whenever they change
   useEffect(() => {
+    if (!isInitialized) return
+
     const event = new CustomEvent("updateBillItems", {
       detail: billItems,
     })
     document.dispatchEvent(event)
-  }, [billItems])
-
-  const handleReceiptProcessed = (items: BillItem[]) => {
-    setBillItems(items)
-    setIsUploadDialogOpen(false)
-  }
+  }, [billItems, isInitialized])
 
   const handleAssignPerson = (itemId: string, person: string) => {
     setBillItems((prevItems) =>
@@ -115,12 +132,6 @@ export default function BillSplitComponent() {
 
   return (
     <div className="space-y-6">
-      <ReceiptProcessor 
-        onReceiptProcessed={handleReceiptProcessed} 
-        isDialogOpen={isUploadDialogOpen}
-        onDialogChange={setIsUploadDialogOpen}
-      />
-
       <Card>
         <CardHeader>
           <CardTitle>Bill Items</CardTitle>

@@ -41,6 +41,12 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
           throw new Error(data.error || "Failed to process receipt")
         }
 
+        // Dispatch bill items update event
+        const event = new CustomEvent("updateBillItems", {
+          detail: data.items,
+        })
+        document.dispatchEvent(event)
+
         onReceiptProcessed(data.items)
         toast({
           title: "Receipt processed successfully",

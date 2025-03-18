@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { usePathname, useRouter } from "next/navigation"
 import NameList from "./name-list"
 import TaxesComponent from "./taxes-component"
+import ReceiptProcessor from "./receipt-processor"
 
 // Default tax settings
 const defaultTaxSettings = {
@@ -21,6 +22,7 @@ export default function NavigationBar() {
   const [isNamesDialogOpen, setIsNamesDialogOpen] = useState(false)
   const [isTaxesDialogOpen, setIsTaxesDialogOpen] = useState(false)
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
   const [taxSettings, setTaxSettings] = useState(defaultTaxSettings)
   const pathname = usePathname()
   const router = useRouter()
@@ -41,12 +43,19 @@ export default function NavigationBar() {
       setTaxSettings(defaultTaxSettings)
     }
 
+    // Listen for receipt upload button click
+    const handleReceiptUploadClick = () => {
+      setIsUploadDialogOpen(true)
+    }
+
     document.addEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
     document.addEventListener("resetReceipt", handleReceiptReset)
+    document.addEventListener("receiptUploadClick", handleReceiptUploadClick)
 
     return () => {
       document.removeEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
       document.removeEventListener("resetReceipt", handleReceiptReset)
+      document.removeEventListener("receiptUploadClick", handleReceiptUploadClick)
     }
   }, [])
 
@@ -66,10 +75,22 @@ export default function NavigationBar() {
     router.push("/")
   }
 
-  const handleReceiptUploadClick = () => {
-    // Dispatch event to trigger receipt upload
-    const event = new CustomEvent("receiptUploadClick")
+  const handleReceiptProcessed = (items: any[]) => {
+    setIsUploadDialogOpen(false)
+    
+    // Store the bill items in localStorage
+    localStorage.setItem("billSplitterItems", JSON.stringify(items))
+    
+    // Dispatch the bill items update event
+    const event = new CustomEvent("updateBillItems", {
+      detail: items,
+    })
     document.dispatchEvent(event)
+    
+    // Redirect to bills page if not already there
+    if (pathname !== "/bills") {
+      router.push("/bills")
+    }
   }
 
   if (!mounted) return null
@@ -93,10 +114,26 @@ export default function NavigationBar() {
         </DialogContent>
       </Dialog>
 
-      {/* Upload Receipt Button */}
-      <Button size="icon" className="rounded-full h-16 w-16 shadow-lg" onClick={handleReceiptUploadClick}>
-        <Plus className="h-8 w-8" />
-      </Button>
+      {/* Receipt Upload Dialog */}
+      <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+        <DialogTrigger asChild>
+          <Button size="icon" className="rounded-full h-16 w-16 shadow-lg">
+            <Plus className="h-8 w-8" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Upload Receipt</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <ReceiptProcessor 
+              onReceiptProcessed={handleReceiptProcessed}
+              isDialogOpen={isUploadDialogOpen}
+              onDialogChange={setIsUploadDialogOpen}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Taxes Dialog */}
       <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
