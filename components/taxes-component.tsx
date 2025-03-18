@@ -73,6 +73,12 @@ export default function TaxesComponent({
     document.addEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
     document.addEventListener("resetReceipt", handleReceiptReset)
 
+    // Dispatch initial tax settings
+    const event = new CustomEvent("updateTaxSettings", {
+      detail: defaultTaxSettings,
+    })
+    document.dispatchEvent(event)
+
     return () => {
       document.removeEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
       document.removeEventListener("resetReceipt", handleReceiptReset)
