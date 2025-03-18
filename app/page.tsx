@@ -32,6 +32,10 @@ export default function LandingPage() {
     setError("")
 
     try {
+      // For debugging
+      console.log("Environment variable:", process.env.NEXT_PUBLIC_APP_PASSWORD)
+      console.log("Entered password:", password)
+
       if (password === process.env.NEXT_PUBLIC_APP_PASSWORD) {
         localStorage.setItem("billSplitterAuth", "true")
         router.push("/home")
@@ -80,7 +84,6 @@ export default function LandingPage() {
             </CardFooter>
           </form>
         </Card>
-        <p className="mt-4 text-center text-sm text-muted-foreground">Hint: The password is "splitbill"</p>
       </div>
     </main>
   )
