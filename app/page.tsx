@@ -32,7 +32,7 @@ export default function LandingPage() {
     setError("")
 
     try {
-      if (password === "splitbill") {
+      if (password === process.env.NEXT_PUBLIC_APP_PASSWORD) {
         localStorage.setItem("billSplitterAuth", "true")
         router.push("/home")
       } else {
