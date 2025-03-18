@@ -18,23 +18,28 @@ export default function NameList({ inDialog = false }: NameListProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
+  // Load names from localStorage on mount
   useEffect(() => {
-    // Load names from localStorage
-    const savedNames = localStorage.getItem("billSplitterNames")
-    if (savedNames) {
-      setNames(JSON.parse(savedNames))
+    const loadNames = () => {
+      const savedNames = localStorage.getItem("billSplitterNames")
+      if (savedNames) {
+        setNames(JSON.parse(savedNames))
+      }
     }
+    loadNames()
   }, [])
 
+  // Save names to localStorage and notify other components whenever they change
   useEffect(() => {
-    // Save names to localStorage whenever they change
-    localStorage.setItem("billSplitterNames", JSON.stringify(names))
-
-    // Dispatch event to notify other components about name changes
-    const event = new CustomEvent("updateNames", {
-      detail: names,
-    })
-    document.dispatchEvent(event)
+    if (names.length > 0) {
+      localStorage.setItem("billSplitterNames", JSON.stringify(names))
+      
+      // Dispatch event to notify other components about name changes
+      const event = new CustomEvent("updateNames", {
+        detail: names,
+      })
+      document.dispatchEvent(event)
+    }
   }, [names])
 
   const handleAddName = () => {

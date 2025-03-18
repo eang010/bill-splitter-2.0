@@ -71,6 +71,7 @@ export default function NavigationBar() {
   }
 
   const handleLogout = () => {
+    // Only clear the authentication state
     localStorage.removeItem("billSplitterAuth")
     router.push("/")
   }
@@ -78,7 +79,10 @@ export default function NavigationBar() {
   const handleReceiptProcessed = (items: any[]) => {
     setIsUploadDialogOpen(false)
     
-    // Store the bill items in localStorage
+    // Clear existing bill items from localStorage
+    localStorage.removeItem("billSplitterItems")
+    
+    // Store the new bill items in localStorage
     localStorage.setItem("billSplitterItems", JSON.stringify(items))
     
     // Dispatch the bill items update event

@@ -66,6 +66,8 @@ export default function BillSplitComponent() {
       const customEvent = event as CustomEvent<BillItem[]>
       if (customEvent.detail) {
         setBillItems(customEvent.detail)
+        // Reset selected item when new bill items are loaded
+        setSelectedItem(null)
         // Save to localStorage
         localStorage.setItem("billSplitterItems", JSON.stringify(customEvent.detail))
       }
