@@ -32,10 +32,6 @@ export default function LandingPage() {
     setError("")
 
     try {
-      // For debugging
-      console.log("Environment variable:", process.env.NEXT_PUBLIC_APP_PASSWORD)
-      console.log("Entered password:", password)
-
       if (password === process.env.NEXT_PUBLIC_APP_PASSWORD) {
         localStorage.setItem("billSplitterAuth", "true")
         router.push("/home")
