@@ -150,7 +150,7 @@ export default function TaxesComponent({
 
   // For main view, show with card wrapper
   return (
-    <Card>
+    <Card className="shadow-lg rounded-2xl bg-gradient-to-br from-primary/5 to-card border border-primary/10">
       <CardContent className="pt-6">{taxContent}</CardContent>
     </Card>
   )
