@@ -111,8 +111,6 @@ export default function NameList({ inDialog = false }: NameListProps) {
   // For main view, show the original horizontal layout with fixed plus button
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold mb-4">People</h2>
-
       <div className="relative flex items-center">
         <div className="absolute left-0 z-10 bg-background w-12 h-full flex items-center justify-center">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
