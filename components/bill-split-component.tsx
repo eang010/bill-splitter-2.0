@@ -134,14 +134,16 @@ export default function BillSplitComponent() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Bill Items</CardTitle>
+        <CardHeader className="bg-muted/30 pb-2">
+          <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+            Bill Items
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {billItems.length > 0 ? (
               billItems.map((item) => (
-                <Card key={item.id} className="relative">
+                <Card key={item.id} className="relative shadow-lg rounded-xl bg-gradient-to-br from-card to-card/90">
                   <CardContent className="pt-6">
                     <div className="space-y-4">
                       <div className="space-y-2">
