@@ -114,7 +114,7 @@ export default function NameList({ inDialog = false }: NameListProps) {
       <h2 className="text-xl font-semibold mb-4">People</h2>
 
       <div className="relative flex items-center">
-        <div className="absolute left-0 z-10 bg-gradient-to-r from-background to-transparent w-12">
+        <div className="absolute left-0 z-10 bg-background w-12 h-full flex items-center justify-center">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button 
