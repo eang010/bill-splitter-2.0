@@ -125,7 +125,7 @@ export default function NameList({ inDialog = false }: NameListProps) {
                 <PlusCircle className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] h-[calc(100vh-8rem)] mb-24">
               <DialogHeader>
                 <DialogTitle>Add a person</DialogTitle>
               </DialogHeader>
@@ -139,6 +139,27 @@ export default function NameList({ inDialog = false }: NameListProps) {
                   autoFocus
                 />
                 <Button onClick={handleAddName}>Add</Button>
+              </div>
+              <div className="mt-4 h-[calc(100%-7rem)] overflow-y-auto pr-2">
+                {names.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-4">No people added yet</div>
+                ) : (
+                  <div className="space-y-2">
+                    {names.map((name, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-secondary rounded-md">
+                        <span>{name}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                          onClick={() => handleRemoveName(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </DialogContent>
           </Dialog>
