@@ -6,6 +6,7 @@ import { Suspense } from "react"
 import NameList from "@/components/name-list"
 import TaxesComponent from "@/components/taxes-component"
 import NavigationBar from "@/components/navigation-bar"
+import GuidedTour from "@/components/guided-tour"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function HomePage() {
@@ -44,6 +45,7 @@ export default function HomePage() {
       </div>
 
       <NavigationBar />
+      <GuidedTour />
     </main>
   )
 }

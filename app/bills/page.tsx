@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import BillSplitComponent from "@/components/bill-split-component"
 import BillOverviewComponent from "@/components/bill-overview-component"
 import NavigationBar from "@/components/navigation-bar"
+import GuidedTour from "@/components/guided-tour"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -39,6 +40,7 @@ export default function BillsPage() {
       </div>
 
       <NavigationBar />
+      <GuidedTour />
     </main>
   )
 }

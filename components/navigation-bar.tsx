@@ -104,7 +104,7 @@ export default function NavigationBar() {
       {/* Names Dialog */}
       <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-full h-12 w-12">
+          <Button id="names-button" variant="ghost" size="icon" className="rounded-full h-12 w-12">
             <Users className="h-6 w-6" />
           </Button>
         </DialogTrigger>
@@ -121,7 +121,7 @@ export default function NavigationBar() {
       {/* Receipt Upload Dialog */}
       <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
         <DialogTrigger asChild>
-          <Button size="icon" className="rounded-full h-16 w-16 shadow-lg">
+          <Button id="upload-receipt-button" size="icon" className="rounded-full h-16 w-16 shadow-lg">
             <Plus className="h-8 w-8" />
           </Button>
         </DialogTrigger>
@@ -142,7 +142,7 @@ export default function NavigationBar() {
       {/* Taxes Dialog */}
       <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-full h-12 w-12">
+          <Button id="taxes-button" variant="ghost" size="icon" className="rounded-full h-12 w-12">
             <DollarSign className="h-6 w-6" />
           </Button>
         </DialogTrigger>

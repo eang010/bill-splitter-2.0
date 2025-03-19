@@ -118,6 +118,7 @@ export default function NameList({ inDialog = false }: NameListProps) {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button 
+                id="name-add-button"
                 variant="outline" 
                 size="sm"
                 className="rounded-full px-2 py-2 h-auto flex-shrink-0 border border-input hover:bg-primary/5"

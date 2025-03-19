@@ -118,14 +118,13 @@ export default function BillSplitComponent() {
     )
   }
 
-  const handleAmountChange = (itemId: string, newAmount: string) => {
-    const amount = parseFloat(newAmount) || 0
+  const handleAmountChange = (itemId: string, newAmount: number) => {
     setBillItems((prevItems) =>
       prevItems.map((item) =>
         item.id === itemId
           ? {
               ...item,
-              amount,
+              amount: newAmount,
             }
           : item
       )
@@ -152,8 +151,8 @@ export default function BillSplitComponent() {
                           <Input
                             type="number"
                             value={item.amount}
-                            onChange={(e) => handleAmountChange(item.id, e.target.value)}
-                            className="w-24 h-8 text-sm"
+                            onChange={(e) => handleAmountChange(item.id, Number(e.target.value))}
+                            className="amount-field w-24"
                             min="0"
                             step="0.01"
                           />
@@ -170,7 +169,7 @@ export default function BillSplitComponent() {
                             }
                           }}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="assign-name-field w-full">
                             <SelectValue placeholder="Assign to..." />
                           </SelectTrigger>
                           <SelectContent>

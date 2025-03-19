@@ -162,7 +162,7 @@ export default function BillOverviewComponent() {
         <CardHeader>
           <CardTitle>Payment Summary</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent id="payment-summary">
           <div className="space-y-4">
             {personTotals.length > 0 ? (
               <Accordion type="single" collapsible className="w-full">
