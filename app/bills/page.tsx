@@ -22,7 +22,7 @@ export default function BillsPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background">
-      <div className="container flex flex-col w-full px-4 pb-24">
+      <div className="container flex flex-col w-full px-4 pb-32">
         <div className="flex items-center my-6">
           <Link href="/home">
             <Button variant="ghost" size="icon" className="mr-2">
@@ -32,8 +32,10 @@ export default function BillsPage() {
           <h1 className="text-2xl font-bold">Bill Breakdown</h1>
         </div>
 
-        <BillSplitComponent />
-        <BillOverviewComponent />
+        <div className="space-y-6">
+          <BillSplitComponent />
+          <BillOverviewComponent />
+        </div>
       </div>
 
       <NavigationBar />
