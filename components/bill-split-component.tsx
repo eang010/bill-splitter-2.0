@@ -160,12 +160,10 @@ export default function BillSplitComponent() {
                       </div>
                       <div className="space-y-2">
                         <Select
-                          value={selectedItem === item.id ? selectedItem : undefined}
+                          value=""
                           onValueChange={(value) => {
-                            setSelectedItem(value)
                             if (value) {
                               handleAssignPerson(item.id, value)
-                              setSelectedItem(null)
                             }
                           }}
                         >
@@ -173,11 +171,14 @@ export default function BillSplitComponent() {
                             <SelectValue placeholder="Assign to..." />
                           </SelectTrigger>
                           <SelectContent>
-                            {names.map((name) => (
-                              <SelectItem key={name} value={name}>
-                                {name}
-                              </SelectItem>
-                            ))}
+                            {names
+                              .filter((name) => !item.assignedTo.includes(name))
+                              .map((name) => (
+                                <SelectItem key={name} value={name}>
+                                  {name}
+                                </SelectItem>
+                              ))
+                            }
                           </SelectContent>
                         </Select>
                       </div>
