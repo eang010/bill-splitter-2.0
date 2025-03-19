@@ -156,29 +156,40 @@ export default function BillOverviewComponent() {
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold mb-4">Overview</h2>
+      <h2 className="text-xl font-bold text-center mb-6 bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+        Overview
+      </h2>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Summary</CardTitle>
+      <Card 
+        id="payment-summary" 
+        className="shadow-lg border-t-4 border-t-primary bg-gradient-to-br from-card to-card/90 transition-colors duration-200"
+      >
+        <CardHeader className="bg-muted/30 pb-2">
+          <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+            Payment Summary
+          </CardTitle>
         </CardHeader>
-        <CardContent id="payment-summary">
+        <CardContent>
           <div className="space-y-4">
             {personTotals.length > 0 ? (
               <Accordion type="single" collapsible className="w-full">
                 {personTotals.map((person, index) => (
-                  <AccordionItem key={person.name} value={`person-${index}`}>
-                    <AccordionTrigger className="py-3">
+                  <AccordionItem 
+                    key={person.name} 
+                    value={`person-${index}`}
+                    className="border border-border/50 rounded-md mb-2 overflow-hidden transition-colors duration-200"
+                  >
+                    <AccordionTrigger className="py-3 px-4 hover:bg-muted/50 transition-colors data-[state=open]:underline">
                       <div className="flex justify-between items-center w-full pr-4">
                         <span className="font-medium">{person.name}</span>
-                        <span className="font-mono font-bold">${person.total.toFixed(2)}</span>
+                        <span className="font-mono font-bold text-primary">${person.total.toFixed(2)}</span>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2 pt-2 pb-1">
-                        <div className="flex justify-between items-center text-sm">
-                          <span>Subtotal</span>
-                          <span className="font-mono">${person.amount.toFixed(2)}</span>
+                    <AccordionContent className="bg-muted/20 px-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">Subtotal</span>
+                          <span className="font-mono font-medium">${person.amount.toFixed(2)}</span>
                         </div>
 
                         {taxSettings.applyServiceCharge && (
@@ -195,16 +206,18 @@ export default function BillOverviewComponent() {
                           </div>
                         )}
 
-                        <Separator className="my-2" />
+                        <Separator className="my-3" />
 
-                        <div className="space-y-1">
-                          <div className="text-sm font-medium">Items:</div>
-                          {person.items.map((item, idx) => (
-                            <div key={idx} className="flex justify-between items-center text-sm pl-2">
-                              <span className="text-muted-foreground">{item.name}</span>
-                              <span className="font-mono text-muted-foreground">${item.amount.toFixed(2)}</span>
-                            </div>
-                          ))}
+                        <div className="space-y-2">
+                          <div className="font-medium">Items:</div>
+                          <div className="space-y-1.5 bg-background/50 rounded-md p-2">
+                            {person.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">{item.name}</span>
+                                <span className="font-mono text-muted-foreground">${item.amount.toFixed(2)}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </AccordionContent>
@@ -212,39 +225,43 @@ export default function BillOverviewComponent() {
                 ))}
               </Accordion>
             ) : (
-              <div className="text-center text-muted-foreground py-4">No items assigned yet</div>
+              <div className="text-center text-muted-foreground py-8 bg-muted/20 rounded-lg">
+                No items assigned yet
+              </div>
             )}
 
             {personTotals.length > 0 && (
               <>
-                <Separator />
+                <Separator className="my-4" />
 
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm text-muted-foreground">
-                    <span>Subtotal</span>
-                    <span className="font-mono">${subtotal.toFixed(2)}</span>
+                <div className="space-y-4">
+                  <div className="bg-muted/20 p-4 rounded-lg space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Subtotal</span>
+                      <span className="font-mono font-medium">${subtotal.toFixed(2)}</span>
+                    </div>
+
+                    {taxSettings.applyServiceCharge && (
+                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                        <span>Service Charge ({taxSettings.serviceCharge}%)</span>
+                        <span className="font-mono">${serviceChargeTotal.toFixed(2)}</span>
+                      </div>
+                    )}
+
+                    {taxSettings.applyGst && (
+                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                        <span>GST ({taxSettings.gst}%)</span>
+                        <span className="font-mono">${gstTotal.toFixed(2)}</span>
+                      </div>
+                    )}
                   </div>
 
-                  {taxSettings.applyServiceCharge && (
-                    <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>Service Charge ({taxSettings.serviceCharge}%)</span>
-                      <span className="font-mono">${serviceChargeTotal.toFixed(2)}</span>
+                  <div className="bg-primary/10 p-4 rounded-lg mt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-lg">Grand Total</span>
+                      <span className="font-mono font-bold text-xl text-primary">${grandTotal.toFixed(2)}</span>
                     </div>
-                  )}
-
-                  {taxSettings.applyGst && (
-                    <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>GST ({taxSettings.gst}%)</span>
-                      <span className="font-mono">${gstTotal.toFixed(2)}</span>
-                    </div>
-                  )}
-                </div>
-
-                <Separator />
-
-                <div className="flex justify-between items-center font-bold">
-                  <span>Grand Total</span>
-                  <span className="font-mono text-lg">${grandTotal.toFixed(2)}</span>
+                  </div>
                 </div>
               </>
             )}
