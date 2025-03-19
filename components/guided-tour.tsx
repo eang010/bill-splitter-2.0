@@ -12,6 +12,11 @@ interface TourStep {
   position: "top" | "right" | "bottom" | "left"
 }
 
+interface GuidedTourProps {
+  startTour?: boolean
+  onTourStart?: () => void
+}
+
 const homeTourSteps: TourStep[] = [
   {
     target: "#name-add-button",
@@ -30,6 +35,12 @@ const homeTourSteps: TourStep[] = [
     title: "Upload Receipt",
     content: "Click here to upload a receipt and start splitting the bill. This will take you to the bills page.",
     position: "top",
+  },
+  {
+    target: "#help-button",
+    title: "Need Help?",
+    content: "Click this button anytime to see this tour again.",
+    position: "bottom",
   },
 ]
 
@@ -64,9 +75,15 @@ const billsTourSteps: TourStep[] = [
     content: "View the breakdown of what each person owes. You're all set!",
     position: "top",
   },
+  {
+    target: "#help-button",
+    title: "Need Help?",
+    content: "Click this button anytime to see this tour again.",
+    position: "bottom",
+  },
 ]
 
-export default function GuidedTour() {
+export default function GuidedTour({ startTour = false, onTourStart }: GuidedTourProps) {
   const [isTourActive, setIsTourActive] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null)
@@ -76,6 +93,18 @@ export default function GuidedTour() {
   // Get the appropriate tour steps based on the current page
   const tourSteps = pathname === "/home" ? homeTourSteps : billsTourSteps
 
+  // Handle external tour start trigger
+  useEffect(() => {
+    if (startTour) {
+      setIsTourActive(true)
+      setCurrentStep(0)
+      if (onTourStart) {
+        onTourStart()
+      }
+    }
+  }, [startTour, onTourStart])
+
+  // Auto-start tour for first-time users
   useEffect(() => {
     // Check if this is the first time the user is accessing the app
     const hasSeenHomeTour = localStorage.getItem("billSplitterHomeTourComplete") === "true"

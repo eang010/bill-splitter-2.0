@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Users, DollarSign, LogOut, Plus } from "lucide-react"
+import { Users, DollarSign, LogOut, Plus, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { usePathname, useRouter } from "next/navigation"
@@ -24,6 +24,7 @@ export default function NavigationBar() {
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
   const [taxSettings, setTaxSettings] = useState(defaultTaxSettings)
+  const [startTour, setStartTour] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
 
@@ -97,6 +98,12 @@ export default function NavigationBar() {
     }
   }
 
+  const handleHelpClick = () => {
+    // Dispatch event to start the tour
+    const event = new CustomEvent("startTour")
+    document.dispatchEvent(event)
+  }
+
   if (!mounted) return null
 
   return (
@@ -114,6 +121,23 @@ export default function NavigationBar() {
           </DialogHeader>
           <div className="py-4">
             <NameList inDialog={true} />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Taxes Dialog */}
+      <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
+        <DialogTrigger asChild>
+          <Button id="taxes-button" variant="ghost" size="icon" className="rounded-full h-12 w-12">
+            <DollarSign className="h-6 w-6" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Taxes & Charges</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <TaxesComponent inDialog={true} taxSettings={taxSettings} updateTaxSettings={updateTaxSettings} />
           </div>
         </DialogContent>
       </Dialog>
@@ -139,22 +163,16 @@ export default function NavigationBar() {
         </DialogContent>
       </Dialog>
 
-      {/* Taxes Dialog */}
-      <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
-        <DialogTrigger asChild>
-          <Button id="taxes-button" variant="ghost" size="icon" className="rounded-full h-12 w-12">
-            <DollarSign className="h-6 w-6" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Taxes & Charges</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <TaxesComponent inDialog={true} taxSettings={taxSettings} updateTaxSettings={updateTaxSettings} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Help Button */}
+      <Button
+        id="help-button"
+        variant="ghost"
+        size="icon"
+        className="rounded-full h-12 w-12"
+        onClick={handleHelpClick}
+      >
+        <HelpCircle className="h-6 w-6" />
+      </Button>
 
       {/* Logout Dialog */}
       <Dialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>

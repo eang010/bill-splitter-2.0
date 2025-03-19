@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import BillSplitComponent from "@/components/bill-split-component"
 import BillOverviewComponent from "@/components/bill-overview-component"
@@ -12,6 +12,7 @@ import Link from "next/link"
 
 export default function BillsPage() {
   const router = useRouter()
+  const [startTour, setStartTour] = useState(false)
 
   // Check if user is authenticated
   useEffect(() => {
@@ -20,6 +21,18 @@ export default function BillsPage() {
       router.push("/")
     }
   }, [router])
+
+  // Listen for tour start event
+  useEffect(() => {
+    const handleTourStart = () => {
+      setStartTour(true)
+    }
+
+    document.addEventListener("startTour", handleTourStart)
+    return () => {
+      document.removeEventListener("startTour", handleTourStart)
+    }
+  }, [])
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background">
@@ -40,7 +53,7 @@ export default function BillsPage() {
       </div>
 
       <NavigationBar />
-      <GuidedTour />
+      <GuidedTour startTour={startTour} onTourStart={() => setStartTour(false)} />
     </main>
   )
 }

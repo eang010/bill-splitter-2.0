@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Suspense } from "react"
 import NameList from "@/components/name-list"
@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function HomePage() {
   const router = useRouter()
+  const [startTour, setStartTour] = useState(false)
 
   // Check if user is authenticated
   useEffect(() => {
@@ -24,6 +25,18 @@ export default function HomePage() {
       router.push("/")
     }
   }, [router])
+
+  // Listen for tour start event
+  useEffect(() => {
+    const handleTourStart = () => {
+      setStartTour(true)
+    }
+
+    document.addEventListener("startTour", handleTourStart)
+    return () => {
+      document.removeEventListener("startTour", handleTourStart)
+    }
+  }, [])
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background">
@@ -45,7 +58,7 @@ export default function HomePage() {
       </div>
 
       <NavigationBar />
-      <GuidedTour />
+      <GuidedTour startTour={startTour} onTourStart={() => setStartTour(false)} />
     </main>
   )
 }
