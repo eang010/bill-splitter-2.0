@@ -73,7 +73,7 @@ const billsTourSteps: TourStep[] = [
     target: "#payment-summary",
     title: "Payment Summary",
     content: "View the breakdown of what each person owes. You're all set!",
-    position: "top",
+    position: "bottom",
   },
   {
     target: "#help-button",
@@ -145,6 +145,11 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
         case "top":
           top = rect.top - 10 - 120 // height of tooltip
           left = rect.left + rect.width / 2 - 150 // half of tooltip width
+          // If the element is too low in the viewport, position the tooltip above the viewport midpoint
+          if (rect.top > window.innerHeight / 2) {
+            top = Math.min(rect.top - 10 - 120, window.innerHeight / 2 - 120)
+            element.scrollIntoView({ behavior: "smooth", block: "center" })
+          }
           break
         case "right":
           top = rect.top + rect.height / 2 - 60 // half of tooltip height
@@ -153,6 +158,10 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
         case "bottom":
           top = rect.bottom + 10
           left = rect.left + rect.width / 2 - 150 // half of tooltip width
+          // Add extra margin at the bottom to prevent cut-off by navigation bar
+          if (top + 120 > window.innerHeight - 100) { // 120 is tooltip height, 100 is nav bar + padding
+            top = window.innerHeight - 220 // Keep 100px from bottom of screen
+          }
           break
         case "left":
           top = rect.top + rect.height / 2 - 60 // half of tooltip height
