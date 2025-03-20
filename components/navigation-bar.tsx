@@ -155,30 +155,28 @@ export default function NavigationBar() {
         </Dialog>
       </div>
 
-      {pathname === "/home" ? (
-        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              id="upload-receipt-button"
-              variant="default"
-              size="icon"
-              className="h-10 w-10 rounded-full"
-            >
-              <Plus className="h-5 w-5" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Upload Receipt</DialogTitle>
-            </DialogHeader>
-            <ReceiptProcessor 
-              onReceiptProcessed={handleReceiptProcessed}
-              isDialogOpen={isUploadDialogOpen}
-              onDialogChange={setIsUploadDialogOpen}
-            />
-          </DialogContent>
-        </Dialog>
-      ) : null}
+      <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+        <DialogTrigger asChild>
+          <Button
+            id="upload-receipt-button"
+            variant="default"
+            size="icon"
+            className="h-10 w-10 rounded-full"
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Receipt</DialogTitle>
+          </DialogHeader>
+          <ReceiptProcessor 
+            onReceiptProcessed={handleReceiptProcessed}
+            isDialogOpen={isUploadDialogOpen}
+            onDialogChange={setIsUploadDialogOpen}
+          />
+        </DialogContent>
+      </Dialog>
 
       <div className="flex items-center gap-2">
         <ThemeToggle />
