@@ -26,7 +26,7 @@ const homeTourSteps: TourStep[] = [
   },
   {
     target: "#taxes-section",
-    title: "Taxes",
+    title: "Taxes & Charges",
     content: "Update GST and service charge percentages if necessary.",
     position: "top",
   },
@@ -35,6 +35,12 @@ const homeTourSteps: TourStep[] = [
     title: "Upload Receipt",
     content: "Click here to upload a receipt and start splitting the bill. This will take you to the bills page.",
     position: "top",
+  },
+  {
+    target: "#theme-toggle-button",
+    title: "Theme Toggle",
+    content: "Switch between light and dark mode for your preferred viewing experience.",
+    position: "bottom",
   },
   {
     target: "#help-button",
@@ -55,7 +61,7 @@ const billsTourSteps: TourStep[] = [
     target: ".amount-field",
     title: "Edit Amount",
     content: "Edit the amount if the receipt value is incorrect.",
-    position: "left",
+    position: "right",
   },
   {
     target: "#names-button",
@@ -73,6 +79,12 @@ const billsTourSteps: TourStep[] = [
     target: "#payment-summary",
     title: "Payment Summary",
     content: "View the breakdown of what each person owes. You're all set!",
+    position: "bottom",
+  },
+  {
+    target: "#theme-toggle-button",
+    title: "Theme Toggle",
+    content: "Switch between light and dark mode for your preferred viewing experience.",
     position: "bottom",
   },
   {
