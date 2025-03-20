@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Button } from "@/components/ui/button"
+import { Share2 } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 
 interface BillItem {
   id: string
@@ -48,6 +51,7 @@ export default function BillOverviewComponent() {
   const [gstTotal, setGstTotal] = useState(0)
   const [grandTotal, setGrandTotal] = useState(0)
   const [names, setNames] = useState<string[]>([])
+  const { toast } = useToast()
 
   useEffect(() => {
     // Load names from localStorage
@@ -154,20 +158,74 @@ export default function BillOverviewComponent() {
     setGrandTotal(totalAmount)
   }
 
+  const handleShare = async () => {
+    // Format the payment summary
+    const summary = personTotals.map(person => 
+      `${person.name}: $${person.total.toFixed(2)}`
+    ).join('\n');
+    
+    const fullSummary = `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}`;
+
+    // Try to use Web Share API
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Bill Split Summary',
+          text: fullSummary,
+        });
+        toast({
+          title: "Shared successfully!",
+          description: "The payment summary has been shared.",
+        });
+      } catch (error) {
+        // Fall back to clipboard if user cancels share
+        await copyToClipboard(fullSummary);
+      }
+    } else {
+      // Fall back to clipboard
+      await copyToClipboard(fullSummary);
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied to clipboard!",
+        description: "The payment summary has been copied to your clipboard.",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to copy",
+        description: "Please try again or copy manually.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="w-full">
-      <h2 className="text-xl font-bold text-center mb-6 bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
-        Overview
-      </h2>
-
       <Card 
         id="payment-summary" 
         className="shadow-lg border-t-4 border-t-primary bg-gradient-to-br from-card to-card/90 transition-colors duration-200"
       >
         <CardHeader className="bg-muted/30 pb-2">
-          <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
-            Payment Summary
-          </CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+              Payment Summary
+            </CardTitle>
+            {personTotals.length > 0 && (
+              <Button
+                variant="default"
+                size="sm"
+                className="h-6 flex items-center gap-1 px-2 text-xs"
+                onClick={handleShare}
+              >
+                <Share2 className="h-3 w-3" />
+                Share
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

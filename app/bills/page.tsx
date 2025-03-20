@@ -46,7 +46,7 @@ export default function BillsPage() {
           <h1 className="text-2xl font-bold">Bill Breakdown</h1>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-20">
           <BillSplitComponent />
           <BillOverviewComponent />
         </div>
