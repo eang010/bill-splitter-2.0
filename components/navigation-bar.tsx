@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation"
 import NameList from "./name-list"
 import TaxesComponent from "./taxes-component"
 import ReceiptProcessor from "./receipt-processor"
+import { ThemeToggle } from "./theme-toggle"
 
 // Default tax settings
 const defaultTaxSettings = {
@@ -107,98 +108,123 @@ export default function NavigationBar() {
   if (!mounted) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 flex items-center justify-around">
-      {/* Names Dialog */}
-      <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
-        <DialogTrigger asChild>
-          <Button id="names-button" variant="ghost" size="icon" className="rounded-full h-12 w-12">
-            <Users className="h-6 w-6" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>People</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <NameList inDialog={true} />
-          </div>
-        </DialogContent>
-      </Dialog>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t bg-background px-4 py-2">
+      <div className="flex items-center gap-2">
+        <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              id="names-button"
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => setIsNamesDialogOpen(true)}
+            >
+              <Users className="h-5 w-5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Manage People</DialogTitle>
+            </DialogHeader>
+            <NameList inDialog />
+          </DialogContent>
+        </Dialog>
 
-      {/* Taxes Dialog */}
-      <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
-        <DialogTrigger asChild>
-          <Button id="taxes-button" variant="ghost" size="icon" className="rounded-full h-12 w-12">
-            <DollarSign className="h-6 w-6" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Taxes & Charges</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <TaxesComponent inDialog={true} taxSettings={taxSettings} updateTaxSettings={updateTaxSettings} />
-          </div>
-        </DialogContent>
-      </Dialog>
+        <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              id="taxes-button"
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => setIsTaxesDialogOpen(true)}
+            >
+              <DollarSign className="h-5 w-5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Taxes & Charges</DialogTitle>
+            </DialogHeader>
+            <TaxesComponent
+              inDialog
+              taxSettings={taxSettings}
+              updateTaxSettings={updateTaxSettings}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
 
-      {/* Receipt Upload Dialog */}
-      <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-        <DialogTrigger asChild>
-          <Button id="upload-receipt-button" size="icon" className="rounded-full h-16 w-16 shadow-lg">
-            <Plus className="h-8 w-8" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Upload Receipt</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
+      {pathname === "/home" ? (
+        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              id="upload-receipt-button"
+              variant="default"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+            >
+              <Plus className="h-5 w-5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Upload Receipt</DialogTitle>
+            </DialogHeader>
             <ReceiptProcessor 
               onReceiptProcessed={handleReceiptProcessed}
               isDialogOpen={isUploadDialogOpen}
               onDialogChange={setIsUploadDialogOpen}
             />
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      ) : null}
 
-      {/* Help Button */}
-      <Button
-        id="help-button"
-        variant="ghost"
-        size="icon"
-        className="rounded-full h-12 w-12"
-        onClick={handleHelpClick}
-      >
-        <HelpCircle className="h-6 w-6" />
-      </Button>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <Button
+          id="help-button"
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10"
+          onClick={handleHelpClick}
+        >
+          <HelpCircle className="h-5 w-5" />
+        </Button>
 
-      {/* Logout Dialog */}
-      <Dialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-full h-12 w-12">
-            <LogOut className="h-6 w-6" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Logout</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="mb-4">Are you sure you want to logout?</p>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsLogoutDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={handleLogout}>
-                Logout
-              </Button>
+        <Dialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => setIsLogoutDialogOpen(true)}
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Logout</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">
+              <p>Are you sure you want to logout?</p>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsLogoutDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button variant="default" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </nav>
   )
 }
 
