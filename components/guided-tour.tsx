@@ -26,7 +26,7 @@ const homeTourSteps: TourStep[] = [
   },
   {
     target: "#taxes-section",
-    title: "Taxes & Charges",
+    title: "Taxes",
     content: "Update GST and service charge percentages if necessary.",
     position: "top",
   },

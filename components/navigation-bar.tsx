@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Users, DollarSign, LogOut, Plus, HelpCircle } from "lucide-react"
+import { Users, DollarSign, LogOut, Plus, HelpCircle, Percent } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { usePathname, useRouter } from "next/navigation"
@@ -9,6 +9,7 @@ import NameList from "./name-list"
 import TaxesComponent from "./taxes-component"
 import ReceiptProcessor from "./receipt-processor"
 import { ThemeToggle } from "./theme-toggle"
+import DiscountComponent, { DiscountSettings } from "./discount-component"
 
 // Default tax settings
 const defaultTaxSettings = {
@@ -18,13 +19,23 @@ const defaultTaxSettings = {
   applyServiceCharge: true,
 }
 
+// Default discount settings
+const defaultDiscountSettings: DiscountSettings = {
+  type: "percentage" as const,
+  value: 0,
+  applyBeforeTax: true,
+  enabled: false,
+}
+
 export default function NavigationBar() {
   const [mounted, setMounted] = useState(false)
   const [isNamesDialogOpen, setIsNamesDialogOpen] = useState(false)
   const [isTaxesDialogOpen, setIsTaxesDialogOpen] = useState(false)
+  const [isDiscountDialogOpen, setIsDiscountDialogOpen] = useState(false)
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
   const [taxSettings, setTaxSettings] = useState(defaultTaxSettings)
+  const [discountSettings, setDiscountSettings] = useState(defaultDiscountSettings)
   const [startTour, setStartTour] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
@@ -40,9 +51,18 @@ export default function NavigationBar() {
       }
     }
 
+    // Listen for discount settings updates
+    const handleDiscountSettingsUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<typeof defaultDiscountSettings>
+      if (customEvent.detail) {
+        setDiscountSettings(customEvent.detail)
+      }
+    }
+
     // Listen for receipt reset events
     const handleReceiptReset = () => {
       setTaxSettings(defaultTaxSettings)
+      setDiscountSettings(defaultDiscountSettings)
     }
 
     // Listen for receipt upload button click
@@ -51,11 +71,13 @@ export default function NavigationBar() {
     }
 
     document.addEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
+    document.addEventListener("updateDiscountSettings", handleDiscountSettingsUpdate as EventListener)
     document.addEventListener("resetReceipt", handleReceiptReset)
     document.addEventListener("receiptUploadClick", handleReceiptUploadClick)
 
     return () => {
       document.removeEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
+      document.removeEventListener("updateDiscountSettings", handleDiscountSettingsUpdate as EventListener)
       document.removeEventListener("resetReceipt", handleReceiptReset)
       document.removeEventListener("receiptUploadClick", handleReceiptUploadClick)
     }
@@ -67,6 +89,17 @@ export default function NavigationBar() {
 
     // Dispatch event to update calculations
     const event = new CustomEvent("updateTaxSettings", {
+      detail: newSettings,
+    })
+    document.dispatchEvent(event)
+  }
+
+  // Update discount settings and dispatch event
+  const updateDiscountSettings = (newSettings: typeof defaultDiscountSettings) => {
+    setDiscountSettings(newSettings)
+
+    // Dispatch event to update calculations
+    const event = new CustomEvent("updateDiscountSettings", {
       detail: newSettings,
     })
     document.dispatchEvent(event)
@@ -144,12 +177,36 @@ export default function NavigationBar() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Taxes & Charges</DialogTitle>
+              <DialogTitle>Taxes</DialogTitle>
             </DialogHeader>
             <TaxesComponent
               inDialog
               taxSettings={taxSettings}
               updateTaxSettings={updateTaxSettings}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isDiscountDialogOpen} onOpenChange={setIsDiscountDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              id="discount-button"
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => setIsDiscountDialogOpen(true)}
+            >
+              <Percent className="h-5 w-5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Discount</DialogTitle>
+            </DialogHeader>
+            <DiscountComponent
+              inDialog
+              discountSettings={discountSettings}
+              updateDiscountSettings={updateDiscountSettings}
             />
           </DialogContent>
         </Dialog>

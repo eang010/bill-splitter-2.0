@@ -8,7 +8,8 @@ import TaxesComponent from "@/components/taxes-component"
 import NavigationBar from "@/components/navigation-bar"
 import GuidedTour from "@/components/guided-tour"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Users, DollarSign } from "lucide-react"
+import { Users, DollarSign, Percent } from "lucide-react"
+import DiscountComponent from "@/components/discount-component"
 
 export default function HomePage() {
   const router = useRouter()
@@ -58,9 +59,17 @@ export default function HomePage() {
           <section id="taxes-section" className="w-full mb-8">
             <div className="flex items-center gap-2 mb-4">
               <DollarSign className="h-6 w-6 text-primary" />
-              <h2 className="text-xl font-semibold">Taxes & Charges</h2>
+              <h2 className="text-xl font-semibold">Taxes</h2>
             </div>
             <TaxesComponent />
+          </section>
+
+          <section id="discount-section" className="w-full mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Percent className="h-6 w-6 text-primary" />
+              <h2 className="text-xl font-semibold">Discount (👷‍♀️🚧⚠️ Under Maintenance)</h2>
+            </div>
+            <DiscountComponent />
           </section>
         </ScrollArea>
       </div>
