@@ -23,7 +23,8 @@ export default function NameList({ inDialog = false }: NameListProps) {
     const loadNames = () => {
       const savedNames = localStorage.getItem("billSplitterNames")
       if (savedNames) {
-        setNames(JSON.parse(savedNames))
+        // Sort names when loading from storage
+        setNames(JSON.parse(savedNames).sort((a: string, b: string) => a.localeCompare(b)))
       }
     }
     loadNames()
@@ -32,11 +33,13 @@ export default function NameList({ inDialog = false }: NameListProps) {
   // Save names to localStorage and notify other components whenever they change
   useEffect(() => {
     if (names.length > 0) {
-      localStorage.setItem("billSplitterNames", JSON.stringify(names))
+      // Ensure names are sorted before saving
+      const sortedNames = [...names].sort((a, b) => a.localeCompare(b))
+      localStorage.setItem("billSplitterNames", JSON.stringify(sortedNames))
       
       // Dispatch event to notify other components about name changes
       const event = new CustomEvent("updateNames", {
-        detail: names,
+        detail: sortedNames,
       })
       document.dispatchEvent(event)
     }
@@ -44,15 +47,20 @@ export default function NameList({ inDialog = false }: NameListProps) {
 
   const handleAddName = () => {
     if (newName.trim() !== "") {
-      const updatedNames = [...names, newName.trim()]
+      // Add the new name and sort alphabetically
+      const updatedNames = [...names, newName.trim()].sort((a, b) => a.localeCompare(b))
       setNames(updatedNames)
       setNewName("")
       setIsDialogOpen(false)
 
-      // Scroll to the end of the list after adding a new name
+      // Scroll to the position of the newly added name
       setTimeout(() => {
         if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth
+          const newNameIndex = updatedNames.indexOf(newName.trim())
+          const elements = scrollContainerRef.current.children
+          if (elements[newNameIndex]) {
+            elements[newNameIndex].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" })
+          }
         }
       }, 100)
     }
