@@ -166,6 +166,7 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
 
     if (element) {
       const rect = element.getBoundingClientRect()
+      const scrollY = window.scrollY
 
       // Calculate tooltip position based on the position property
       let top = 0
@@ -173,12 +174,29 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
 
       switch (step.position) {
         case "top":
-          top = rect.top - 10 - 120 // height of tooltip
-          left = rect.left + rect.width / 2 - 150 // half of tooltip width
-          // If the element is too low in the viewport, position the tooltip above the viewport midpoint
-          if (rect.top > window.innerHeight / 2) {
-            top = Math.min(rect.top - 10 - 120, window.innerHeight / 2 - 120)
-            element.scrollIntoView({ behavior: "smooth", block: "center" })
+          // For sections that might be affected by scrolling (like discount and taxes sections)
+          if (step.target.includes("section")) {
+            // Calculate the element's position relative to the viewport
+            const elementTop = rect.top + scrollY
+            const viewportMiddle = window.innerHeight / 2
+            const scrollTarget = elementTop - viewportMiddle + rect.height / 2
+
+            // Smooth scroll to position the element in the center
+            window.scrollTo({
+              top: scrollTarget,
+              behavior: "smooth"
+            })
+
+            // Set tooltip position relative to the element
+            top = rect.top - 140 // Position above the element with fixed offset
+            left = rect.left + rect.width / 2 - 150 // Center horizontally
+          } else {
+            top = rect.top - 10 - 120 // height of tooltip
+            left = rect.left + rect.width / 2 - 150 // half of tooltip width
+            if (rect.top > window.innerHeight / 2) {
+              top = Math.min(rect.top - 10 - 120, window.innerHeight / 2 - 120)
+              element.scrollIntoView({ behavior: "smooth", block: "center" })
+            }
           }
           break
         case "right":
@@ -205,10 +223,8 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
       if (top < 10) top = 10
       if (top > window.innerHeight - 130) top = window.innerHeight - 130
 
+      // Set position immediately for all elements
       setTooltipPosition({ top, left })
-
-      // Scroll element into view if needed
-      element.scrollIntoView({ behavior: "smooth", block: "center" })
     }
   }, [isTourActive, currentStep, tourSteps])
 
