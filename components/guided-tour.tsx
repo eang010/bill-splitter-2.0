@@ -174,21 +174,9 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
 
       switch (step.position) {
         case "top":
-          // For sections that might be affected by scrolling (like discount and taxes sections)
+          // For sections, just position the tooltip without scrolling
           if (step.target.includes("section")) {
-            // Calculate the element's position relative to the viewport
-            const elementTop = rect.top + scrollY
-            const viewportMiddle = window.innerHeight / 2
-            const scrollTarget = elementTop - viewportMiddle + rect.height / 2
-
-            // Smooth scroll to position the element in the center
-            window.scrollTo({
-              top: scrollTarget,
-              behavior: "smooth"
-            })
-
-            // Set tooltip position relative to the element
-            top = rect.top - 140 // Position above the element with fixed offset
+            top = rect.top - 130 // Position above the element with fixed offset
             left = rect.left + rect.width / 2 - 150 // Center horizontally
           } else {
             top = rect.top - 10 - 120 // height of tooltip
@@ -223,7 +211,7 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
       if (top < 10) top = 10
       if (top > window.innerHeight - 130) top = window.innerHeight - 130
 
-      // Set position immediately for all elements
+      // Set position immediately
       setTooltipPosition({ top, left })
     }
   }, [isTourActive, currentStep, tourSteps])
