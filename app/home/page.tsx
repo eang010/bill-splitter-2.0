@@ -67,7 +67,7 @@ export default function HomePage() {
           <section id="discount-section" className="w-full mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Percent className="h-6 w-6 text-primary" />
-              <h2 className="text-xl font-semibold">Discount (👷‍♀️🚧⚠️ Under Maintenance)</h2>
+              <h2 className="text-xl font-semibold">Discount</h2>
             </div>
             <DiscountComponent />
           </section>
