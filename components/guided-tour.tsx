@@ -172,6 +172,38 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
       let top = 0
       let left = 0
 
+      // Check if we need to scroll to the element
+      const shouldScrollToElement = step.target === "#payment-summary" || 
+        (pathname === "/bills" && step.target === "#help-button")
+
+      if (shouldScrollToElement) {
+        // For payment summary, scroll to show both the element and space for the tooltip
+        if (step.target === "#payment-summary") {
+          // First scroll the element into view
+          element.scrollIntoView({ behavior: "smooth", block: "start" })
+          
+          // Wait for scroll to complete then position the tooltip
+          setTimeout(() => {
+            const updatedRect = element.getBoundingClientRect()
+            // Position tooltip above the element
+            setTooltipPosition({
+              top: updatedRect.top - 160, // Increased offset to ensure tooltip is above
+              left: updatedRect.left + updatedRect.width / 2 - 150
+            })
+          }, 500)
+        } else {
+          element.scrollIntoView({ behavior: "smooth", block: "center" })
+          setTimeout(() => {
+            const updatedRect = element.getBoundingClientRect()
+            setTooltipPosition({
+              top: step.position === "bottom" ? updatedRect.bottom + 10 : updatedRect.top - 130,
+              left: updatedRect.left + updatedRect.width / 2 - 150
+            })
+          }, 500)
+        }
+        return
+      }
+
       switch (step.position) {
         case "top":
           // For sections, just position the tooltip without scrolling
@@ -211,10 +243,12 @@ export default function GuidedTour({ startTour = false, onTourStart }: GuidedTou
       if (top < 10) top = 10
       if (top > window.innerHeight - 130) top = window.innerHeight - 130
 
-      // Set position immediately
-      setTooltipPosition({ top, left })
+      // Set position immediately for non-scrolling elements
+      if (!shouldScrollToElement) {
+        setTooltipPosition({ top, left })
+      }
     }
-  }, [isTourActive, currentStep, tourSteps])
+  }, [isTourActive, currentStep, tourSteps, pathname])
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
