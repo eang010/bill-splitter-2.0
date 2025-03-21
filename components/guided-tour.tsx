@@ -31,10 +31,16 @@ const homeTourSteps: TourStep[] = [
     position: "top",
   },
   {
+    target: "#discount-section",
+    title: "Discount",
+    content: "Set up discounts as a percentage or fixed amount, and choose whether to apply them before or after taxes.",
+    position: "top",
+  },
+  {
     target: "#upload-receipt-button",
     title: "Upload Receipt",
     content: "Click here to upload a receipt and start splitting the bill. This will take you to the bills page.",
-    position: "top",
+    position: "bottom",
   },
   {
     target: "#theme-toggle-button",
@@ -73,6 +79,12 @@ const billsTourSteps: TourStep[] = [
     target: "#taxes-button",
     title: "Update Taxes",
     content: "Click here to update tax settings if needed.",
+    position: "bottom",
+  },
+  {
+    target: "#discount-button",
+    title: "Update Discount",
+    content: "Click here to modify discount settings. You can set a percentage or fixed amount, and choose to apply it before or after taxes.",
     position: "bottom",
   },
   {
