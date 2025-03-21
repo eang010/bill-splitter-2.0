@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Users, DollarSign, LogOut, Plus, HelpCircle, Percent } from "lucide-react"
+import { Users, DollarSign, LogOut, Plus, HelpCircle, Percent, History } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { usePathname, useRouter } from "next/navigation"

@@ -8,8 +8,9 @@ import TaxesComponent from "@/components/taxes-component"
 import NavigationBar from "@/components/navigation-bar"
 import GuidedTour from "@/components/guided-tour"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Users, DollarSign, Percent } from "lucide-react"
+import { Users, DollarSign, Percent, History } from "lucide-react"
 import DiscountComponent from "@/components/discount-component"
+import { Button } from "@/components/ui/button"
 
 export default function HomePage() {
   const router = useRouter()
@@ -42,7 +43,16 @@ export default function HomePage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background">
-      <div className="container flex flex-col w-full px-4 pb-24">
+      <div className="container flex flex-col w-full px-4 pb-24 relative">
+        <Button
+          id="history-button"
+          variant="ghost"
+          size="icon"
+          className="absolute top-6 right-4 h-10 w-10"
+          onClick={() => router.push("/bills")}
+        >
+          <History className="h-5 w-5" />
+        </Button>
         <h1 className="text-2xl font-bold text-center my-6">Bill Splitter</h1>
 
         <Suspense fallback={<div>Loading names...</div>}>
