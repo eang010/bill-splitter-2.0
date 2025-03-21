@@ -22,11 +22,19 @@ interface TaxSettings {
   applyServiceCharge: boolean
 }
 
+interface DiscountSettings {
+  type: "percentage" | "amount"
+  value: number
+  applyBeforeTax: boolean
+  enabled: boolean
+}
+
 interface PersonTotal {
   name: string
   amount: number
   serviceChargeAmount: number
   gstAmount: number
+  discountAmount: number
   total: number
   items: Array<{
     name: string
@@ -42,13 +50,23 @@ const defaultTaxSettings: TaxSettings = {
   applyServiceCharge: true,
 }
 
+// Default discount settings
+const defaultDiscountSettings: DiscountSettings = {
+  type: "percentage",
+  value: 0,
+  applyBeforeTax: true,
+  enabled: false,
+}
+
 export default function BillOverviewComponent() {
   const [billItems, setBillItems] = useState<BillItem[]>([])
   const [taxSettings, setTaxSettings] = useState<TaxSettings>(defaultTaxSettings)
+  const [discountSettings, setDiscountSettings] = useState<DiscountSettings>(defaultDiscountSettings)
   const [personTotals, setPersonTotals] = useState<PersonTotal[]>([])
   const [subtotal, setSubtotal] = useState(0)
   const [serviceChargeTotal, setServiceChargeTotal] = useState(0)
   const [gstTotal, setGstTotal] = useState(0)
+  const [discountTotal, setDiscountTotal] = useState(0)
   const [grandTotal, setGrandTotal] = useState(0)
   const [names, setNames] = useState<string[]>([])
   const { toast } = useToast()
@@ -76,25 +94,36 @@ export default function BillOverviewComponent() {
       }
     }
 
+    // Listen for discount settings updates
+    const handleDiscountSettingsUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<DiscountSettings>
+      if (customEvent.detail) {
+        setDiscountSettings(customEvent.detail)
+      }
+    }
+
     // Listen for receipt reset
     const handleReceiptReset = () => {
       setTaxSettings(defaultTaxSettings)
+      setDiscountSettings(defaultDiscountSettings)
     }
 
     document.addEventListener("updateBillItems", handleBillItemsUpdate as EventListener)
     document.addEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
+    document.addEventListener("updateDiscountSettings", handleDiscountSettingsUpdate as EventListener)
     document.addEventListener("resetReceipt", handleReceiptReset)
 
     return () => {
       document.removeEventListener("updateBillItems", handleBillItemsUpdate as EventListener)
       document.removeEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
+      document.removeEventListener("updateDiscountSettings", handleDiscountSettingsUpdate as EventListener)
       document.removeEventListener("resetReceipt", handleReceiptReset)
     }
   }, [])
 
   useEffect(() => {
     calculateTotals()
-  }, [billItems, taxSettings])
+  }, [billItems, taxSettings, discountSettings])
 
   const calculateTotals = () => {
     // Get all unique names from bill items
@@ -121,21 +150,46 @@ export default function BillOverviewComponent() {
         }
       })
 
+      // Calculate discount
+      let discountAmount = 0
+      if (discountSettings.enabled) {
+        if (discountSettings.type === "percentage") {
+          discountAmount = subtotal * (discountSettings.value / 100)
+        } else {
+          // For amount type, divide the total discount amount among all people
+          discountAmount = discountSettings.value / allNames.size
+        }
+      }
+
+      // Apply discount before or after tax based on settings
+      let amountAfterDiscount = subtotal
+      if (discountSettings.enabled && discountSettings.applyBeforeTax) {
+        amountAfterDiscount = subtotal - discountAmount
+      }
+
       // Calculate service charge
-      const serviceChargeAmount = taxSettings.applyServiceCharge ? subtotal * (taxSettings.serviceCharge / 100) : 0
+      const serviceChargeAmount = taxSettings.applyServiceCharge ? amountAfterDiscount * (taxSettings.serviceCharge / 100) : 0
 
       // Calculate GST (applied after service charge)
-      const amountWithServiceCharge = subtotal + serviceChargeAmount
+      const amountWithServiceCharge = amountAfterDiscount + serviceChargeAmount
       const gstAmount = taxSettings.applyGst ? amountWithServiceCharge * (taxSettings.gst / 100) : 0
 
+      // Apply discount after tax if configured
+      if (discountSettings.enabled && !discountSettings.applyBeforeTax) {
+        amountAfterDiscount = subtotal + serviceChargeAmount + gstAmount - discountAmount
+      }
+
       // Calculate total
-      const total = subtotal + serviceChargeAmount + gstAmount
+      const total = discountSettings.applyBeforeTax
+        ? amountAfterDiscount + serviceChargeAmount + gstAmount
+        : amountAfterDiscount
 
       return {
         name,
         amount: subtotal,
         serviceChargeAmount,
         gstAmount,
+        discountAmount,
         total,
         items: personItems,
       }
@@ -150,11 +204,13 @@ export default function BillOverviewComponent() {
     const totalSubtotal = totals.reduce((sum, person) => sum + person.amount, 0)
     const totalServiceCharge = totals.reduce((sum, person) => sum + person.serviceChargeAmount, 0)
     const totalGst = totals.reduce((sum, person) => sum + person.gstAmount, 0)
+    const totalDiscount = totals.reduce((sum, person) => sum + person.discountAmount, 0)
     const totalAmount = totals.reduce((sum, person) => sum + person.total, 0)
 
     setSubtotal(totalSubtotal)
     setServiceChargeTotal(totalServiceCharge)
     setGstTotal(totalGst)
+    setDiscountTotal(totalDiscount)
     setGrandTotal(totalAmount)
   }
 
@@ -250,6 +306,15 @@ export default function BillOverviewComponent() {
                           <span className="font-mono font-medium">${person.amount.toFixed(2)}</span>
                         </div>
 
+                        {discountSettings.enabled && discountSettings.applyBeforeTax && (
+                          <div className="flex justify-between items-center text-sm text-muted-foreground">
+                            <span>
+                              Discount ({discountSettings.type === "percentage" ? `${discountSettings.value}%` : "Fixed Amount"})
+                            </span>
+                            <span className="font-mono">-${person.discountAmount.toFixed(2)}</span>
+                          </div>
+                        )}
+
                         {taxSettings.applyServiceCharge && (
                           <div className="flex justify-between items-center text-sm text-muted-foreground">
                             <span>Service Charge ({taxSettings.serviceCharge}%)</span>
@@ -261,6 +326,15 @@ export default function BillOverviewComponent() {
                           <div className="flex justify-between items-center text-sm text-muted-foreground">
                             <span>GST ({taxSettings.gst}%)</span>
                             <span className="font-mono">${person.gstAmount.toFixed(2)}</span>
+                          </div>
+                        )}
+
+                        {discountSettings.enabled && !discountSettings.applyBeforeTax && (
+                          <div className="flex justify-between items-center text-sm text-muted-foreground">
+                            <span>
+                              Discount ({discountSettings.type === "percentage" ? `${discountSettings.value}%` : "Fixed Amount"})
+                            </span>
+                            <span className="font-mono">-${person.discountAmount.toFixed(2)}</span>
                           </div>
                         )}
 
@@ -299,6 +373,15 @@ export default function BillOverviewComponent() {
                       <span className="font-mono font-medium">${subtotal.toFixed(2)}</span>
                     </div>
 
+                    {discountSettings.enabled && discountSettings.applyBeforeTax && (
+                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                        <span>
+                          Discount ({discountSettings.type === "percentage" ? `${discountSettings.value}%` : "Fixed Amount"})
+                        </span>
+                        <span className="font-mono">-${discountTotal.toFixed(2)}</span>
+                      </div>
+                    )}
+
                     {taxSettings.applyServiceCharge && (
                       <div className="flex justify-between items-center text-sm text-muted-foreground">
                         <span>Service Charge ({taxSettings.serviceCharge}%)</span>
@@ -310,6 +393,15 @@ export default function BillOverviewComponent() {
                       <div className="flex justify-between items-center text-sm text-muted-foreground">
                         <span>GST ({taxSettings.gst}%)</span>
                         <span className="font-mono">${gstTotal.toFixed(2)}</span>
+                      </div>
+                    )}
+
+                    {discountSettings.enabled && !discountSettings.applyBeforeTax && (
+                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                        <span>
+                          Discount ({discountSettings.type === "percentage" ? `${discountSettings.value}%` : "Fixed Amount"})
+                        </span>
+                        <span className="font-mono">-${discountTotal.toFixed(2)}</span>
                       </div>
                     )}
                   </div>
