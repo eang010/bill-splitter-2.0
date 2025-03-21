@@ -49,6 +49,12 @@ const homeTourSteps: TourStep[] = [
     position: "bottom",
   },
   {
+    target: "#history-button",
+    title: "Bill History",
+    content: "Click here to view your previous uploaded receipt. Note that it will only show the latest.",
+    position: "bottom",
+  },
+  {
     target: "#help-button",
     title: "Need Help?",
     content: "Click this button anytime to see this tour again.",
