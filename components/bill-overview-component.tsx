@@ -202,32 +202,10 @@ export default function BillOverviewComponent() {
 
     // Calculate grand totals
     const totalSubtotal = totals.reduce((sum, person) => sum + person.amount, 0)
+    const totalServiceCharge = totals.reduce((sum, person) => sum + person.serviceChargeAmount, 0)
+    const totalGst = totals.reduce((sum, person) => sum + person.gstAmount, 0)
     const totalDiscount = totals.reduce((sum, person) => sum + person.discountAmount, 0)
-
-    // Calculate grand total with proper discount application
-    let grandTotalAmount = totalSubtotal
-    
-    if (discountSettings.enabled && discountSettings.applyBeforeTax) {
-      grandTotalAmount -= totalDiscount
-    }
-
-    // Apply service charge to discounted or original amount
-    const totalServiceCharge = taxSettings.applyServiceCharge 
-      ? grandTotalAmount * (taxSettings.serviceCharge / 100)
-      : 0
-    
-    // Apply GST to amount with service charge
-    const amountWithServiceCharge = grandTotalAmount + totalServiceCharge
-    const totalGst = taxSettings.applyGst 
-      ? amountWithServiceCharge * (taxSettings.gst / 100)
-      : 0
-
-    // Calculate final grand total
-    if (discountSettings.enabled && !discountSettings.applyBeforeTax) {
-      grandTotalAmount = totalSubtotal + totalServiceCharge + totalGst - totalDiscount
-    } else {
-      grandTotalAmount = grandTotalAmount + totalServiceCharge + totalGst
-    }
+    const grandTotalAmount = totals.reduce((sum, person) => sum + person.total, 0)
 
     setSubtotal(totalSubtotal)
     setServiceChargeTotal(totalServiceCharge)
