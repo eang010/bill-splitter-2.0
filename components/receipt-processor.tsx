@@ -1,12 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Upload, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface ReceiptProcessorProps {
   onReceiptProcessed: (items: any[]) => void
@@ -17,6 +14,7 @@ interface ReceiptProcessorProps {
 export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onDialogChange }: ReceiptProcessorProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const { toast } = useToast()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const handleFileSelect = async (event: Event) => {
@@ -82,17 +80,19 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Input
+      <div className="flex flex-col items-center gap-4">
+        <input
           type="file"
           accept="image/*"
           disabled={isProcessing}
           onChange={handleFileChange}
-          className="flex-1"
+          className="hidden"
+          ref={fileInputRef}
         />
         <Button
           disabled={isProcessing}
-          className="min-w-[120px]"
+          className="w-full"
+          onClick={() => fileInputRef.current?.click()}
         >
           {isProcessing ? (
             <>
@@ -102,13 +102,13 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              Upload
+              Upload Receipt
             </>
           )}
         </Button>
       </div>
-      <p className="text-sm text-muted-foreground">
-        Upload a receipt image to automatically extract items and prices
+      <p className="text-sm text-muted-foreground text-center">
+        Click to upload a receipt image
       </p>
     </div>
   )

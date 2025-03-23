@@ -225,7 +225,7 @@ export default function NavigationBar() {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Upload Receipt</DialogTitle>
+            <DialogTitle>Upload</DialogTitle>
           </DialogHeader>
           <ReceiptProcessor 
             onReceiptProcessed={handleReceiptProcessed}
