@@ -81,44 +81,35 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
   }
 
   return (
-    <>
-      <Dialog open={isDialogOpen} onOpenChange={onDialogChange}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Upload Receipt</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Input
-                type="file"
-                accept="image/*"
-                disabled={isProcessing}
-                onChange={handleFileChange}
-                className="flex-1"
-              />
-              <Button
-                disabled={isProcessing}
-                className="min-w-[120px]"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload
-                  </>
-                )}
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Upload a receipt image to automatically extract items and prices
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Input
+          type="file"
+          accept="image/*"
+          disabled={isProcessing}
+          onChange={handleFileChange}
+          className="flex-1"
+        />
+        <Button
+          disabled={isProcessing}
+          className="min-w-[120px]"
+        >
+          {isProcessing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <Upload className="mr-2 h-4 w-4" />
+              Upload
+            </>
+          )}
+        </Button>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Upload a receipt image to automatically extract items and prices
+      </p>
+    </div>
   )
 } 
