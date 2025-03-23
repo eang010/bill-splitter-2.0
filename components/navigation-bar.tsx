@@ -147,9 +147,9 @@ export default function NavigationBar() {
           <DialogTrigger asChild>
             <Button
               id="names-button"
-              variant="ghost"
+              variant={isNamesDialogOpen ? "default" : "ghost"}
               size="icon"
-              className="h-10 w-10"
+              className={`h-10 w-10 ${isNamesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
               onClick={() => setIsNamesDialogOpen(true)}
             >
               <Users className="h-5 w-5" />
@@ -167,9 +167,9 @@ export default function NavigationBar() {
           <DialogTrigger asChild>
             <Button
               id="taxes-button"
-              variant="ghost"
+              variant={isTaxesDialogOpen ? "default" : "ghost"}
               size="icon"
-              className="h-10 w-10"
+              className={`h-10 w-10 ${isTaxesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
               onClick={() => setIsTaxesDialogOpen(true)}
             >
               <DollarSign className="h-5 w-5" />
@@ -191,9 +191,9 @@ export default function NavigationBar() {
           <DialogTrigger asChild>
             <Button
               id="discount-button"
-              variant="ghost"
+              variant={isDiscountDialogOpen ? "default" : "ghost"}
               size="icon"
-              className="h-10 w-10"
+              className={`h-10 w-10 ${isDiscountDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
               onClick={() => setIsDiscountDialogOpen(true)}
             >
               <Percent className="h-5 w-5" />
@@ -216,9 +216,9 @@ export default function NavigationBar() {
         <DialogTrigger asChild>
           <Button
             id="upload-receipt-button"
-            variant="default"
+            variant={isUploadDialogOpen ? "default" : "default"}
             size="icon"
-            className="h-10 w-10 rounded-full"
+            className={`h-10 w-10 rounded-full ${isUploadDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
           >
             <Plus className="h-5 w-5" />
           </Button>
