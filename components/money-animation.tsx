@@ -12,7 +12,7 @@ interface MoneyIcon {
   left: number
   delay: number
   duration: number
-  startPosition: number // Add start position for vertical position
+  startPosition: number
 }
 
 export default function MoneyAnimation({ isVisible }: MoneyAnimationProps) {
@@ -71,19 +71,22 @@ export default function MoneyAnimation({ isVisible }: MoneyAnimationProps) {
           Processing Receipt...
         </div>
       </div>
-      {moneyIcons.map((icon) => (
-        <div
-          key={icon.id}
-          className="absolute text-primary"
-          style={{
-            left: `${icon.left}%`,
-            top: `${icon.startPosition}%`,
-            animation: `fly-up ${icon.duration}s ease-in-out ${icon.delay}s infinite`,
-          }}
-        >
-          <DollarSign className="h-6 w-6" />
-        </div>
-      ))}
+      <div className="absolute inset-0 overflow-hidden">
+        {moneyIcons.map((icon) => (
+          <div
+            key={icon.id}
+            className="absolute text-primary"
+            style={{
+              left: `${icon.left}%`,
+              top: `${icon.startPosition}%`,
+              animation: `fly-up ${icon.duration}s ease-in-out ${icon.delay}s infinite`,
+              willChange: 'transform',
+            }}
+          >
+            <DollarSign className="h-6 w-6" />
+          </div>
+        ))}
+      </div>
     </div>
   )
 } 
