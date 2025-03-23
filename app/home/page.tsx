@@ -53,8 +53,10 @@ export default function HomePage() {
         >
           <History className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold my-6">
-          Bill{" "}
+        <h1 className="text-4xl font-extrabold my-8 tracking-tight relative">
+          <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
+            Bill
+          </span>{" "}
           <span className="animate-splitter">
             {"Splitter".split("").map((letter, index) => (
               <span
@@ -63,11 +65,13 @@ export default function HomePage() {
                   "--delay": 6 - index,
                   "--position": index
                 } as React.CSSProperties}
+                className="font-black tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent drop-shadow-sm"
               >
                 {letter}
               </span>
             ))}
           </span>
+          <div className="absolute -bottom-2 left-0 w-1/3 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
         </h1>
 
         <Suspense fallback={<div>Loading names...</div>}>
