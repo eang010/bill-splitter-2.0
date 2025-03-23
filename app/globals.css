@@ -80,6 +80,32 @@
   will-change: transform;
 }
 
+@keyframes splitter-rotate {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(var(--position) * 2rem));
+  }
+}
+
+.animate-splitter {
+  display: inline-block;
+  position: relative;
+  margin-left: 0.5rem;
+}
+
+.animate-splitter span {
+  display: inline-block;
+  animation: splitter-rotate 0.8s ease-in-out forwards;
+  animation-delay: calc(var(--delay) * 0.5s + 0.5s);
+  animation-fill-mode: forwards;
+}
+
+.animate-splitter span:first-child {
+  animation: none;
+}
+
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;

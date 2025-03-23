@@ -53,7 +53,22 @@ export default function HomePage() {
         >
           <History className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold text-center my-6">Bill Splitter</h1>
+        <h1 className="text-2xl font-bold my-6">
+          Bill{" "}
+          <span className="animate-splitter">
+            {"Splitter".split("").map((letter, index) => (
+              <span
+                key={index}
+                style={{ 
+                  "--delay": 6 - index,
+                  "--position": index
+                } as React.CSSProperties}
+              >
+                {letter}
+              </span>
+            ))}
+          </span>
+        </h1>
 
         <Suspense fallback={<div>Loading names...</div>}>
           <section id="names-section" className="w-full mb-8">
