@@ -43,7 +43,19 @@ export default function BillsPage() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold">Bill Breakdown</h1>
+          <h1 className="text-xl sm:text-2xl font-bold mb-6">
+            <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
+              Bill{" "}
+            </span>
+            <span className="inline-flex">
+              <span className="animate-tilt-left font-black tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent drop-shadow-sm">
+                Break
+              </span>
+              <span className="animate-tilt-right font-black tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
+                down
+              </span>
+            </span>
+          </h1>
         </div>
 
         <div className="space-y-20">

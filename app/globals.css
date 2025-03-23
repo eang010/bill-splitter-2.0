@@ -117,3 +117,35 @@
   }
 }
 
+@keyframes tilt-left {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-25deg);
+  }
+}
+
+@keyframes tilt-right {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(25deg);
+  }
+}
+
+.animate-tilt-left {
+  animation: tilt-left 0.5s ease-in-out forwards;
+  transform-origin: right center;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.animate-tilt-right {
+  animation: tilt-right 0.5s ease-in-out forwards;
+  transform-origin: left center;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
