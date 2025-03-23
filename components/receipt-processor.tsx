@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Upload, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
@@ -9,10 +9,11 @@ interface ReceiptProcessorProps {
   onReceiptProcessed: (items: any[]) => void
   isDialogOpen: boolean
   onDialogChange: (open: boolean) => void
+  onProcessingChange: (isProcessing: boolean) => void
+  isProcessing: boolean
 }
 
-export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onDialogChange }: ReceiptProcessorProps) {
-  const [isProcessing, setIsProcessing] = useState(false)
+export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onDialogChange, onProcessingChange, isProcessing }: ReceiptProcessorProps) {
   const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -21,7 +22,7 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
       const customEvent = event as CustomEvent<{ file: File }>
       if (!customEvent.detail?.file) return
 
-      setIsProcessing(true)
+      onProcessingChange(true)
       const file = customEvent.detail.file
 
       try {
@@ -59,7 +60,7 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
           variant: "destructive",
         })
       } finally {
-        setIsProcessing(false)
+        onProcessingChange(false)
       }
     }
 
@@ -67,7 +68,7 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
     return () => {
       document.removeEventListener("receiptFileSelected", handleFileSelect)
     }
-  }, [onReceiptProcessed, toast, onDialogChange])
+  }, [onReceiptProcessed, toast, onDialogChange, onProcessingChange])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
