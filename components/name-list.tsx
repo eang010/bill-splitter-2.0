@@ -132,8 +132,8 @@ export default function NameList({ inDialog = false }: NameListProps) {
                 <PlusCircle className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] h-[calc(100vh-8rem)] mb-24">
-              <DialogHeader>
+            <DialogContent className="sm:max-w-[350px] max-h-[80vh]">
+              <DialogHeader className="pb-4">
                 <DialogTitle>Add a person</DialogTitle>
               </DialogHeader>
               <div className="flex gap-2 items-center">
@@ -147,7 +147,7 @@ export default function NameList({ inDialog = false }: NameListProps) {
                 />
                 <Button onClick={handleAddName}>Add</Button>
               </div>
-              <div className="mt-4 h-[calc(100%-7rem)] overflow-y-auto pr-2">
+              <div className="mt-4 max-h-[300px] overflow-y-auto pr-2">
                 {names.length === 0 ? (
                   <div className="text-center text-muted-foreground py-4">No people added yet</div>
                 ) : (

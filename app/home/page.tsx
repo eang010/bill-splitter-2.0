@@ -76,11 +76,13 @@ export default function HomePage() {
 
         <Suspense fallback={<div>Loading names...</div>}>
           <section id="names-section" className="w-full mb-8">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-6">
               <Users className="h-6 w-6 text-primary" />
               <h2 className="text-xl font-semibold">People</h2>
             </div>
-            <NameList />
+            <div className="mt-4">
+              <NameList />
+            </div>
           </section>
         </Suspense>
 
