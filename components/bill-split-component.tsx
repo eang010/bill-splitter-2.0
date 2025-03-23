@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { X } from "lucide-react"
+import { X, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface BillItem {
   id: string
@@ -21,6 +21,8 @@ export default function BillSplitComponent() {
   const [names, setNames] = useState<string[]>([])
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
+  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
   useEffect(() => {
     // Load names from localStorage
@@ -131,6 +133,36 @@ export default function BillSplitComponent() {
     )
   }
 
+  const handleDropdownOpen = (itemId: string) => {
+    setOpenDropdownId(itemId)
+  }
+
+  const handleDropdownClose = () => {
+    setOpenDropdownId(null)
+  }
+
+  const getAvailableNames = (itemId: string) => {
+    const item = billItems.find(item => item.id === itemId)
+    return names.filter(name => !item?.assignedTo.includes(name))
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openDropdownId) {
+        const dropdown = dropdownRefs.current[openDropdownId]
+        if (dropdown && !dropdown.contains(event.target as Node)) {
+          handleDropdownClose()
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [openDropdownId])
+
   return (
     <div className="space-y-6">
       <Card>
@@ -142,73 +174,87 @@ export default function BillSplitComponent() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {billItems.length > 0 ? (
-              billItems.map((item) => (
-                <Card key={item.id} className="relative shadow-lg rounded-xl bg-gradient-to-br from-card to-card/90">
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label className="text-base">{item.name}</Label>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground">$</span>
-                          <Input
-                            type="number"
-                            value={item.amount}
-                            onChange={(e) => handleAmountChange(item.id, Number(e.target.value))}
-                            className="amount-field w-24"
-                            min="0"
-                            step="0.01"
-                          />
+              billItems.map((item) => {
+                const availableNames = getAvailableNames(item.id)
+                const isOpen = openDropdownId === item.id
+                return (
+                  <Card key={item.id} className="relative shadow-lg rounded-xl bg-gradient-to-br from-card to-card/90">
+                    <CardContent className="pt-6">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label className="text-base">{item.name}</Label>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground">$</span>
+                            <Input
+                              type="number"
+                              value={item.amount}
+                              onChange={(e) => handleAmountChange(item.id, Number(e.target.value))}
+                              className="amount-field w-24"
+                              min="0"
+                              step="0.01"
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Select
-                          value=""
-                          onValueChange={(value) => {
-                            if (value) {
-                              handleAssignPerson(item.id, value)
-                            }
-                          }}
-                        >
-                          <SelectTrigger className="assign-name-field w-full">
-                            <SelectValue placeholder="Assign to..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {names
-                              .filter((name) => !item.assignedTo.includes(name))
-                              .map((name) => (
-                                <SelectItem key={name} value={name}>
-                                  {name}
-                                </SelectItem>
-                              ))
-                            }
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {item.assignedTo.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {item.assignedTo.map((person) => (
-                            <Badge
-                              key={person}
-                              variant="secondary"
-                              className="flex items-center gap-1"
+                        <div className="space-y-2">
+                          <div className="relative" ref={el => dropdownRefs.current[item.id] = el}>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between assign-name-field"
+                              onClick={() => isOpen ? handleDropdownClose() : handleDropdownOpen(item.id)}
                             >
-                              {person}
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-4 w-4 p-0 hover:bg-transparent"
-                                onClick={() => handleRemoveAssignment(item.id, person)}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </Badge>
-                          ))}
+                              <span className="text-muted-foreground">Assign to...</span>
+                              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                            {isOpen && availableNames.length > 0 && (
+                              <div className="absolute z-10 w-full mt-1 bg-popover text-popover-foreground rounded-md border shadow-md">
+                                <div className="max-h-[200px] overflow-y-auto">
+                                  {availableNames.map((name) => (
+                                    <div
+                                      key={name}
+                                      className="px-2 py-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                                      onClick={() => {
+                                        handleAssignPerson(item.id, name)
+                                        // Only close if this was the last available name
+                                        if (availableNames.length <= 1) {
+                                          handleDropdownClose()
+                                        }
+                                      }}
+                                    >
+                                      {name}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                        {item.assignedTo.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {item.assignedTo.map((person) => (
+                              <Badge
+                                key={person}
+                                variant="secondary"
+                                className="flex items-center gap-1"
+                              >
+                                {person}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-4 w-4 p-0 hover:bg-transparent"
+                                  onClick={() => handleRemoveAssignment(item.id, person)}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })
             ) : (
               <div className="col-span-full text-center text-muted-foreground py-4">
                 No items added yet. Click the + button to upload a receipt.
