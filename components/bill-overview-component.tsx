@@ -69,6 +69,7 @@ export default function BillOverviewComponent() {
   const [discountTotal, setDiscountTotal] = useState(0)
   const [grandTotal, setGrandTotal] = useState(0)
   const [names, setNames] = useState<string[]>([])
+  const [payTo, setPayTo] = useState<string>("")
   const { toast } = useToast()
 
   useEffect(() => {
@@ -220,7 +221,8 @@ export default function BillOverviewComponent() {
       `${person.name}: $${person.total.toFixed(2)}`
     ).join('\n');
     
-    const fullSummary = `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}`;
+    const payToInfo = payTo ? `\n\nPay to: ${payTo}` : '';
+    const fullSummary = `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}${payToInfo}`;
 
     // Try to use Web Share API
     if (navigator.share) {
@@ -285,6 +287,21 @@ export default function BillOverviewComponent() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            {personTotals.length > 0 && (
+              <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-lg">
+                <span className="font-medium whitespace-nowrap">Pay to:</span>
+                <select
+                  value={payTo}
+                  onChange={(e) => setPayTo(e.target.value)}
+                  className="flex-1 bg-background rounded-md px-3 py-1.5 border border-border/50 focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="">Select recipient</option>
+                  {names.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             {personTotals.length > 0 ? (
               <Accordion type="single" collapsible className="w-full">
                 {personTotals.map((person, index) => (
