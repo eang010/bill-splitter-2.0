@@ -22,8 +22,13 @@ import { cn } from "@/lib/utils"
 export default function BillsPage() {
   const router = useRouter()
   const [startTour, setStartTour] = useState(false)
+  const [origin, setOrigin] = useState("");
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   // Check if user is authenticated
   useEffect(() => {
@@ -79,7 +84,7 @@ export default function BillsPage() {
                   <p className="text-sm font-medium leading-relaxed">
                   For Apple iOS <br></br>
                     1. Open Safari. <br></br>
-                    2. Navigate to {origin}. <br></br>
+                    2. Navigate to <Link href={origin} className="text-blue-600 underline hover:text-blue-800">{origin}</Link>. <br></br>
                     3. Tap the 'Share' button. <br></br>
                     4. Select 'Add to Home screen'. <br></br>
                   </p>
@@ -91,7 +96,7 @@ export default function BillsPage() {
                   <p className="text-sm font-medium leading-relaxed">
                   For Android <br></br>
                     1. Open Chrome. <br></br> 
-                    2. Navigate to {origin}. <br></br>
+                    2. Navigate to <Link href={origin} className="text-blue-600 underline hover:text-blue-800">{origin}</Link>. <br></br>
                     3. Tap the three-dot overflow menu [...] <br></br>
                     4. Select 'Add to Home screen'. <br></br>
                     5. Enter a name for the app before adding it to your home screen. <br></br>
