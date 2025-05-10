@@ -62,8 +62,8 @@ export default function HomePage() {
         </Link>
         <>
           {!isPWA && (
-            <Link href="/pwaInstruction" className="absolute top-8 right-14 z-50">
-              <Button variant="secondary" className="h-8">Install</Button>
+            <Link href="/pwaInstruction" className="absolute top-2 right-4 z-50 text-sm underline">
+              Install as App
             </Link>
           )}
         </>
