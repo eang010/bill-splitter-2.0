@@ -1,7 +1,7 @@
 {
   "name": "billsplitter2.0",
   "short_name": "BillSplitter",
-  "description": "Your go-to application to split your bills",
+  "description": "Split bills easily with friends and family",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
