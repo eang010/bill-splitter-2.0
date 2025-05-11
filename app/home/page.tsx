@@ -16,6 +16,7 @@ import Link from "next/link"
 export default function HomePage() {
   const router = useRouter()
   const [startTour, setStartTour] = useState(false)
+  const [isPWA, setIsPWA] = useState(false)
 
   // Check if user is authenticated
   useEffect(() => {
@@ -42,6 +43,15 @@ export default function HomePage() {
     }
   }, [])
 
+  //check if pwa
+  useEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as any).standalone === true;
+  
+    console.log('Is PWA:', isStandalone);
+    setIsPWA(isStandalone);
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-center bg-background">
       <div className="container flex flex-col w-full px-4 pb-24 relative">
@@ -50,6 +60,13 @@ export default function HomePage() {
             <History className="h-5 w-5" />
           </Button>
         </Link>
+        <>
+          {!isPWA && (
+            <Link href="/pwaInstruction" className="absolute top-2 right-4 z-50 text-sm underline">
+              Install as App
+            </Link>
+          )}
+        </>
         <div className="pr-12">
           <h1 className="text-xl sm:text-2xl font-extrabold my-8 tracking-tight relative">
             <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
