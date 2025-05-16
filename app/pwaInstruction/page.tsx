@@ -85,8 +85,7 @@ export default function BillsPage() {
                   For Apple iOS <br></br>
                     1. Open Safari. <br></br>
                     2. Navigate to <Link href={origin} className="text-blue-600 underline hover:text-blue-800">{origin}</Link>. <br></br>
-                    3. Tap the 'Share' button. <br></br>
-                    4. Select 'Add to Home screen'. <br></br>
+                    3. Select 'Add to Home screen'. <br></br>
                   </p>
                 </div>
             </div>
