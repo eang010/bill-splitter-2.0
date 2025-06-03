@@ -16,13 +16,17 @@ interface BillItem {
   assignedTo: string[]
 }
 
+interface DropdownRefs {
+  [key: string]: HTMLDivElement | null
+}
+
 export default function BillSplitComponent() {
   const [billItems, setBillItems] = useState<BillItem[]>([])
   const [names, setNames] = useState<string[]>([])
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
-  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const dropdownRefs = useRef<DropdownRefs>({})
 
   useEffect(() => {
     // Load names from localStorage
@@ -196,7 +200,7 @@ export default function BillSplitComponent() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <div className="relative" ref={el => dropdownRefs.current[item.id] = el}>
+                          <div className="relative" ref={(el: HTMLDivElement | null) => dropdownRefs.current[item.id] = el}>
                             <Button
                               variant="outline"
                               role="combobox"
