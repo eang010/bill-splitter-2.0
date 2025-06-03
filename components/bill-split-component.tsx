@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, type LegacyRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,7 +26,7 @@ export default function BillSplitComponent() {
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
-  const dropdownRefs = useRef<DropdownRefs>({})
+  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
   useEffect(() => {
     // Load names from localStorage
@@ -200,7 +200,14 @@ export default function BillSplitComponent() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <div className="relative" ref={(el: HTMLDivElement | null) => dropdownRefs.current[item.id] = el}>
+                          <div 
+                            className="relative" 
+                            ref={
+                              ((el: HTMLDivElement | null) => {
+                                dropdownRefs.current[item.id] = el
+                              }) as LegacyRef<HTMLDivElement>)
+                            }
+                          >
                             <Button
                               variant="outline"
                               role="combobox"
