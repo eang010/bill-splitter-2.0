@@ -202,11 +202,9 @@ export default function BillSplitComponent() {
                         <div className="space-y-2">
                           <div 
                             className="relative" 
-                            ref={
-                              ((el: HTMLDivElement | null) => {
-                                dropdownRefs.current[item.id] = el
-                              }) as LegacyRef<HTMLDivElement>)
-                            }
+                            ref={((el: HTMLDivElement | null) => {
+                              dropdownRefs.current[item.id] = el
+                            }) as LegacyRef<HTMLDivElement>}
                           >
                             <Button
                               variant="outline"
