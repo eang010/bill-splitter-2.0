@@ -148,7 +148,7 @@ export default function NavigationBar() {
     <>
       <MoneyAnimation isVisible={isProcessing} />
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        <nav className="flex items-center justify-between border-t bg-background px-4 py-1">
+        <nav className="flex items-center justify-between border-t bg-background px-4 py-2">
           <div className="flex items-center gap-2">
             <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
               <DialogTrigger asChild>
@@ -156,10 +156,10 @@ export default function NavigationBar() {
                   id="names-button"
                   variant={isNamesDialogOpen ? "default" : "ghost"}
                   size="icon"
-                  className={`h-10 w-10 ${isNamesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                  className={`h-12 w-12 ${isNamesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
                   onClick={() => setIsNamesDialogOpen(true)}
                 >
-                  <Users className="h-5 w-5" />
+                  <Users className="h-6 w-6" />
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -176,10 +176,10 @@ export default function NavigationBar() {
                   id="taxes-button"
                   variant={isTaxesDialogOpen ? "default" : "ghost"}
                   size="icon"
-                  className={`h-10 w-10 ${isTaxesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                  className={`h-12 w-12 ${isTaxesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
                   onClick={() => setIsTaxesDialogOpen(true)}
                 >
-                  <DollarSign className="h-5 w-5" />
+                  <DollarSign className="h-6 w-6" />
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -200,10 +200,10 @@ export default function NavigationBar() {
                   id="discount-button"
                   variant={isDiscountDialogOpen ? "default" : "ghost"}
                   size="icon"
-                  className={`h-10 w-10 ${isDiscountDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                  className={`h-12 w-12 ${isDiscountDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
                   onClick={() => setIsDiscountDialogOpen(true)}
                 >
-                  <Percent className="h-5 w-5" />
+                  <Percent className="h-6 w-6" />
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -225,9 +225,9 @@ export default function NavigationBar() {
                 id="upload-receipt-button"
                 variant={isUploadDialogOpen ? "default" : "default"}
                 size="icon"
-                className={`h-10 w-10 rounded-full ${isUploadDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                className={`h-12 w-12 rounded-full ${isUploadDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
               >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-6 w-6" />
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -250,10 +250,10 @@ export default function NavigationBar() {
               id="help-button"
               variant="ghost"
               size="icon"
-              className="h-10 w-10"
+              className="h-12 w-12"
               onClick={handleHelpClick}
             >
-              <HelpCircle className="h-5 w-5" />
+              <HelpCircle className="h-6 w-6" />
             </Button>
 
             <Dialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
@@ -261,10 +261,10 @@ export default function NavigationBar() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10"
+                  className="h-12 w-12"
                   onClick={() => setIsLogoutDialogOpen(true)}
                 >
-                  <LogOut className="h-5 w-5" />
+                  <LogOut className="h-6 w-6" />
                 </Button>
               </DialogTrigger>
               <DialogContent>
