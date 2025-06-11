@@ -290,7 +290,7 @@ export default function NavigationBar() {
           </div>
         </nav>
 
-        <div className="text-center py-1 text-[10px] text-muted-foreground/70 bg-background border-t">
+        <div className="text-center py-1 pb-4 text-[10px] text-muted-foreground/70 bg-background border-t">
           <p className="flex items-center justify-center gap-1">
             Made with ❤️ by{" "}
             <Link 
