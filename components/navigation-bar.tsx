@@ -290,14 +290,14 @@ export default function NavigationBar() {
           </div>
         </nav>
 
-        <div className="text-center py-1 pb-4 text-[10px] text-muted-foreground/70 bg-background border-t">
+        <div className="text-center py-1 pb-5 text-[10px] text-muted-foreground/70 bg-background border-t">
           <p className="flex items-center justify-center gap-1">
             Made with ❤️ by{" "}
             <Link 
               href="https://www.linkedin.com/in/emilyang20/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
             >
               Emily
               <Linkedin className="h-2.5 w-2.5" />
