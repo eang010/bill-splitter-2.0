@@ -121,6 +121,14 @@ export default function BillOverviewComponent() {
       }
     }
 
+    // Listen for name list updates (e.g. when user adds a name)
+    const handleNamesUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<string[]>
+      if (customEvent.detail) {
+        setNames(customEvent.detail)
+      }
+    }
+
     // Listen for receipt reset
     const handleReceiptReset = () => {
       setTaxSettings(defaultTaxSettings)
@@ -130,12 +138,14 @@ export default function BillOverviewComponent() {
     document.addEventListener("updateBillItems", handleBillItemsUpdate as EventListener)
     document.addEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
     document.addEventListener("updateDiscountSettings", handleDiscountSettingsUpdate as EventListener)
+    document.addEventListener("updateNames", handleNamesUpdate as EventListener)
     document.addEventListener("resetReceipt", handleReceiptReset)
 
     return () => {
       document.removeEventListener("updateBillItems", handleBillItemsUpdate as EventListener)
       document.removeEventListener("updateTaxSettings", handleTaxSettingsUpdate as EventListener)
       document.removeEventListener("updateDiscountSettings", handleDiscountSettingsUpdate as EventListener)
+      document.removeEventListener("updateNames", handleNamesUpdate as EventListener)
       document.removeEventListener("resetReceipt", handleReceiptReset)
     }
   }, [])
