@@ -199,6 +199,30 @@ export default function HomePage() {
       <MoneyAnimation isVisible={isProcessing} />
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 pb-10">
         <div className="pt-10">
+          {currentStep === 1 && (
+            <div className="text-left">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight relative inline-block text-left">
+                <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
+                  Bill
+                </span>{" "}
+                <span className="animate-splitter">
+                  {"Splitter".split("").map((letter, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        "--delay": 6 - index,
+                        "--position": index,
+                      } as React.CSSProperties}
+                      className="font-black tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent drop-shadow-sm"
+                    >
+                      {letter}
+                    </span>
+                  ))}
+                </span>
+                <div className="absolute -bottom-2 left-0 w-1/3 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
+              </h1>
+            </div>
+          )}
           {currentStep > 1 && (
             <div className="flex items-center justify-center">
               {Array.from({ length: 4 }).map((_, index) => {
@@ -257,28 +281,6 @@ export default function HomePage() {
         >
           {currentStep === 1 && (
             <div className="w-full">
-              <div className="mb-6 text-left">
-                <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight relative inline-block text-left">
-                  <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
-                    Bill
-                  </span>{" "}
-                  <span className="animate-splitter">
-                    {"Splitter".split("").map((letter, index) => (
-                      <span
-                        key={index}
-                        style={{
-                          "--delay": 6 - index,
-                          "--position": index,
-                        } as React.CSSProperties}
-                        className="font-black tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent drop-shadow-sm"
-                      >
-                        {letter}
-                      </span>
-                    ))}
-                  </span>
-                  <div className="absolute -bottom-2 left-0 w-1/3 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
-                </h1>
-              </div>
               <ReceiptProcessor
                 variant="dropzone"
                 onReceiptProcessed={handleReceiptProcessed}
