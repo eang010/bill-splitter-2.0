@@ -199,33 +199,35 @@ export default function HomePage() {
       <MoneyAnimation isVisible={isProcessing} />
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 pb-10">
         <div className="pt-10">
-          <div className="flex items-center justify-center">
-            {Array.from({ length: 4 }).map((_, index) => {
-              const stepNumber = index + 1
-              const isComplete = stepNumber < currentStep
-              const isCurrent = stepNumber === currentStep
-              return (
-                <div key={stepNumber} className="flex items-center">
-                  <span
-                    className={`h-2.5 w-2.5 rounded-full border transition-all duration-300 ${
-                      isCurrent
-                        ? "border-primary bg-primary scale-125"
-                        : isComplete
-                          ? "border-primary/40 bg-primary/40"
-                          : "border-muted-foreground/40"
-                    }`}
-                  />
-                  {stepNumber < 4 && (
+          {currentStep > 1 && (
+            <div className="flex items-center justify-center">
+              {Array.from({ length: 4 }).map((_, index) => {
+                const stepNumber = index + 1
+                const isComplete = stepNumber < currentStep
+                const isCurrent = stepNumber === currentStep
+                return (
+                  <div key={stepNumber} className="flex items-center">
                     <span
-                      className={`mx-2 h-px w-8 transition-colors duration-300 ${
-                        isComplete ? "bg-primary/40" : "bg-muted-foreground/30"
+                      className={`h-2.5 w-2.5 rounded-full border transition-all duration-300 ${
+                        isCurrent
+                          ? "border-primary bg-primary scale-125"
+                          : isComplete
+                            ? "border-primary/40 bg-primary/40"
+                            : "border-muted-foreground/40"
                       }`}
                     />
-                  )}
-                </div>
-              )
-            })}
-          </div>
+                    {stepNumber < 4 && (
+                      <span
+                        className={`mx-2 h-px w-8 transition-colors duration-300 ${
+                          isComplete ? "bg-primary/40" : "bg-muted-foreground/30"
+                        }`}
+                      />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         {currentStep > 1 && (
@@ -256,7 +258,7 @@ export default function HomePage() {
           {currentStep === 1 && (
             <div className="w-full">
               <div className="mb-6 text-left">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight relative inline-block text-left">
+                <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight relative inline-block text-left">
                   <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
                     Bill
                   </span>{" "}
@@ -276,9 +278,6 @@ export default function HomePage() {
                   </span>
                   <div className="absolute -bottom-2 left-0 w-1/3 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
                 </h1>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  {stepCopy[1].subtitle}
-                </p>
               </div>
               <ReceiptProcessor
                 variant="dropzone"
