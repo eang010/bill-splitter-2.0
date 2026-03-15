@@ -79,6 +79,24 @@ export default function BillOverviewComponent() {
       setNames(JSON.parse(savedNames))
     }
 
+    const savedTaxSettings = localStorage.getItem("billSplitterTaxSettings")
+    if (savedTaxSettings) {
+      try {
+        setTaxSettings(JSON.parse(savedTaxSettings))
+      } catch (error) {
+        console.error("Error parsing saved tax settings:", error)
+      }
+    }
+
+    const savedDiscountSettings = localStorage.getItem("billSplitterDiscountSettings")
+    if (savedDiscountSettings) {
+      try {
+        setDiscountSettings(JSON.parse(savedDiscountSettings))
+      } catch (error) {
+        console.error("Error parsing saved discount settings:", error)
+      }
+    }
+
     // Listen for bill items updates
     const handleBillItemsUpdate = (event: Event) => {
       const customEvent = event as CustomEvent<BillItem[]>
