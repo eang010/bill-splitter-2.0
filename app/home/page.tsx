@@ -202,7 +202,7 @@ export default function HomePage() {
         <div className="pt-10">
           {currentStep === 1 && (
             <div className="relative">
-              <h1 className="pr-12 text-2xl sm:text-3xl font-extrabold tracking-tight relative inline-block text-left">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight relative inline-block text-left">
                 <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
                   Bill
                 </span>{" "}
@@ -222,13 +222,6 @@ export default function HomePage() {
                 </span>
                 <div className="absolute -bottom-2 left-0 w-1/3 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
               </h1>
-              <div className="absolute right-0 top-0 flex items-center gap-2">
-                <Link href="/bills">
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
-                    <History className="h-5 w-5" />
-                  </Button>
-                </Link>
-              </div>
             </div>
           )}
           {currentStep > 1 && (
@@ -297,6 +290,15 @@ export default function HomePage() {
                 onProcessingChange={setIsProcessing}
                 isProcessing={isProcessing}
               />
+              <div className="mt-4 flex justify-center">
+                <Link
+                  href="/bills"
+                  className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <History className="h-4 w-4" />
+                  View History
+                </Link>
+              </div>
             </div>
           )}
 
