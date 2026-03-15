@@ -88,22 +88,24 @@ export default function NameList({ inDialog = false }: NameListProps) {
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Enter name"
-            className="flex-1"
+            className="flex-1 h-12 rounded-xl text-base"
           />
-          <Button onClick={handleAddName}>Add</Button>
+          <Button onClick={handleAddName} size="icon" className="h-12 w-12 rounded-xl">
+            <PlusCircle className="h-5 w-5" />
+          </Button>
         </div>
 
-        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+        <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
           {names.length === 0 ? (
-            <div className="text-center text-muted-foreground py-4">No people added yet</div>
+            <div className="text-center text-muted-foreground py-6">No people added yet</div>
           ) : (
             names.map((name, index) => (
-              <div key={index} className="flex items-center justify-between p-2 bg-secondary rounded-md">
-                <span>{name}</span>
+              <div key={index} className="flex items-center justify-between rounded-xl bg-muted/50 px-4 py-3">
+                <span className="font-medium">{name}</span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full"
+                  className="h-7 w-7 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => handleRemoveName(index)}
                 >
                   <X className="h-4 w-4" />

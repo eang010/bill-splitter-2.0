@@ -19,6 +19,7 @@ interface TaxesComponentProps {
   inDialog?: boolean
   taxSettings?: TaxSettings
   updateTaxSettings?: (settings: TaxSettings) => void
+  variant?: "default" | "wizard"
 }
 
 // Default tax settings
@@ -33,6 +34,7 @@ export default function TaxesComponent({
   inDialog = false,
   taxSettings: externalTaxSettings,
   updateTaxSettings: externalUpdateTaxSettings,
+  variant = "default",
 }: TaxesComponentProps) {
   // Use internal state only if external state is not provided
   const [internalTaxSettings, setInternalTaxSettings] = useState<TaxSettings>(defaultTaxSettings)
@@ -103,48 +105,97 @@ export default function TaxesComponent({
     updateTaxSettings({ ...taxSettings, applyServiceCharge: checked })
   }
 
-  const taxContent = (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label htmlFor="gst">GST (%)</Label>
-          <Input
-            id="gst"
-            type="number"
-            value={taxSettings.gst}
-            onChange={handleGstChange}
-            className="w-24"
-            min="0"
-            step="0.1"
-          />
+  const taxContent =
+    variant === "wizard" ? (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between rounded-xl bg-muted/50 px-4 py-3">
+          <div className="space-y-1">
+            <Label htmlFor="gst" className="text-sm font-medium">
+              GST
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="gst"
+                type="number"
+                value={taxSettings.gst}
+                onChange={handleGstChange}
+                className="h-9 w-20 rounded-xl text-base text-center"
+                min="0"
+                step="0.1"
+              />
+              <span className="text-sm text-muted-foreground">%</span>
+            </div>
+          </div>
+          <Switch checked={taxSettings.applyGst} onCheckedChange={handleGstToggle} aria-label="Apply GST" />
         </div>
-        <Switch checked={taxSettings.applyGst} onCheckedChange={handleGstToggle} aria-label="Apply GST" />
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label htmlFor="service-charge">Service Charge (%)</Label>
-          <Input
-            id="service-charge"
-            type="number"
-            value={taxSettings.serviceCharge}
-            onChange={handleServiceChargeChange}
-            className="w-24"
-            min="0"
-            step="0.1"
+        <div className="flex items-center justify-between rounded-xl bg-muted/50 px-4 py-3">
+          <div className="space-y-1">
+            <Label htmlFor="service-charge" className="text-sm font-medium">
+              Service Charge
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="service-charge"
+                type="number"
+                value={taxSettings.serviceCharge}
+                onChange={handleServiceChargeChange}
+                className="h-9 w-20 rounded-xl text-base text-center"
+                min="0"
+                step="0.1"
+              />
+              <span className="text-sm text-muted-foreground">%</span>
+            </div>
+          </div>
+          <Switch
+            checked={taxSettings.applyServiceCharge}
+            onCheckedChange={handleServiceChargeToggle}
+            aria-label="Apply Service Charge"
           />
         </div>
-        <Switch
-          checked={taxSettings.applyServiceCharge}
-          onCheckedChange={handleServiceChargeToggle}
-          aria-label="Apply Service Charge"
-        />
       </div>
-    </div>
-  )
+    ) : (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="gst">GST (%)</Label>
+            <Input
+              id="gst"
+              type="number"
+              value={taxSettings.gst}
+              onChange={handleGstChange}
+              className="w-24"
+              min="0"
+              step="0.1"
+            />
+          </div>
+          <Switch checked={taxSettings.applyGst} onCheckedChange={handleGstToggle} aria-label="Apply GST" />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="service-charge">Service Charge (%)</Label>
+            <Input
+              id="service-charge"
+              type="number"
+              value={taxSettings.serviceCharge}
+              onChange={handleServiceChargeChange}
+              className="w-24"
+              min="0"
+              step="0.1"
+            />
+          </div>
+          <Switch
+            checked={taxSettings.applyServiceCharge}
+            onCheckedChange={handleServiceChargeToggle}
+            aria-label="Apply Service Charge"
+          />
+        </div>
+      </div>
+    )
 
   // For dialog view, show without card wrapper
-  if (inDialog) {
+  if (inDialog || variant === "wizard") {
     return taxContent
   }
 

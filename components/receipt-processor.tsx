@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useId } from "react"
 import { Button } from "@/components/ui/button"
 import { Upload, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
@@ -11,11 +11,20 @@ interface ReceiptProcessorProps {
   onDialogChange: (open: boolean) => void
   onProcessingChange: (isProcessing: boolean) => void
   isProcessing: boolean
+  variant?: "button" | "dropzone"
 }
 
-export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onDialogChange, onProcessingChange, isProcessing }: ReceiptProcessorProps) {
+export default function ReceiptProcessor({
+  onReceiptProcessed,
+  isDialogOpen,
+  onDialogChange,
+  onProcessingChange,
+  isProcessing,
+  variant = "button",
+}: ReceiptProcessorProps) {
   const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const inputId = useId()
 
   useEffect(() => {
     const handleFileSelect = async (event: Event) => {
@@ -83,6 +92,7 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
     <div className="space-y-4">
       <div className="flex flex-col items-center gap-4">
         <input
+          id={inputId}
           type="file"
           accept="image/*"
           disabled={isProcessing}
@@ -90,27 +100,52 @@ export default function ReceiptProcessor({ onReceiptProcessed, isDialogOpen, onD
           className="hidden"
           ref={fileInputRef}
         />
-        <Button
-          disabled={isProcessing}
-          className="w-full"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            <>
-              <Upload className="mr-2 h-4 w-4" />
-              Upload Receipt
-            </>
-          )}
-        </Button>
+        {variant === "dropzone" ? (
+          <label
+            htmlFor={inputId}
+            className={`flex w-full aspect-[4/3] cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
+              isProcessing ? "cursor-not-allowed opacity-60" : "hover:border-primary/60"
+            } bg-muted/30`}
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              {isProcessing ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Upload className="h-5 w-5" />
+              )}
+            </span>
+            <div className="space-y-1">
+              <p className="text-base font-medium text-foreground">
+                {isProcessing ? "Processing receipt..." : "Tap to upload receipt"}
+              </p>
+              <p className="text-sm text-muted-foreground">JPG or PNG</p>
+            </div>
+          </label>
+        ) : (
+          <Button
+            disabled={isProcessing}
+            className="w-full"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload Receipt
+              </>
+            )}
+          </Button>
+        )}
       </div>
-      <p className="text-sm text-muted-foreground text-center">
-        Click to upload a receipt image
-      </p>
+      {variant !== "dropzone" && (
+        <p className="text-sm text-muted-foreground text-center">
+          Click to upload a receipt image
+        </p>
+      )}
     </div>
   )
 } 

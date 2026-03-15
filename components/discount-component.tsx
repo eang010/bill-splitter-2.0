@@ -18,6 +18,7 @@ interface DiscountComponentProps {
   inDialog?: boolean
   discountSettings?: DiscountSettings
   updateDiscountSettings?: (settings: DiscountSettings) => void
+  variant?: "default" | "wizard"
 }
 
 // Default discount settings
@@ -32,6 +33,7 @@ export default function DiscountComponent({
   inDialog = false,
   discountSettings: externalDiscountSettings,
   updateDiscountSettings: externalUpdateDiscountSettings,
+  variant = "default",
 }: DiscountComponentProps) {
   const [internalDiscountSettings, setInternalDiscountSettings] = useState<DiscountSettings>(defaultDiscountSettings)
 
@@ -53,85 +55,95 @@ export default function DiscountComponent({
     }
   }
 
-  return (
-    <Card className={inDialog ? "border-0 shadow-none" : "shadow-lg rounded-2xl bg-gradient-to-br from-primary/5 to-card border border-primary/10"}>
-      <CardContent className={inDialog ? "p-0" : "pt-6"}>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="discount-enabled" className="font-medium">Enable Discount</Label>
+  const content = (
+    <div className="space-y-4">
+      <div className={`flex items-center justify-between ${variant === "wizard" ? "rounded-xl bg-muted/50 px-4 py-3" : ""}`}>
+        <Label htmlFor="discount-enabled" className="text-sm font-medium">
+          Enable Discount
+        </Label>
+        <Switch
+          id="discount-enabled"
+          checked={discountSettings.enabled}
+          onCheckedChange={(checked) =>
+            updateSettings({ ...discountSettings, enabled: checked })
+          }
+        />
+      </div>
+
+      {discountSettings.enabled && (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="discount-type" className="text-sm font-medium">
+              Discount Type
+            </Label>
+            <Select
+              value={discountSettings.type}
+              onValueChange={(value: "percentage" | "amount") =>
+                updateSettings({ ...discountSettings, type: value })
+              }
+            >
+              <SelectTrigger id="discount-type" className={variant === "wizard" ? "h-12 rounded-xl text-base" : ""}>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="percentage">Percentage (%)</SelectItem>
+                <SelectItem value="amount">Amount ($)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discount-value" className="text-sm font-medium">
+              {discountSettings.type === "percentage" ? "Percentage" : "Amount"}
+            </Label>
+            <div className="flex items-center gap-2">
+              {discountSettings.type === "amount" && (
+                <span className="text-sm text-muted-foreground">$</span>
+              )}
+              <Input
+                id="discount-value"
+                type="number"
+                min="0"
+                step={discountSettings.type === "percentage" ? "1" : "0.01"}
+                value={discountSettings.value}
+                onChange={(e) =>
+                  updateSettings({
+                    ...discountSettings,
+                    value: parseFloat(e.target.value) || 0,
+                  })
+                }
+                className={`w-24 ${variant === "wizard" ? "h-12 rounded-xl text-base text-center" : ""}`}
+              />
+              {discountSettings.type === "percentage" && (
+                <span className="text-sm text-muted-foreground">%</span>
+              )}
+            </div>
+          </div>
+
+          <div className={`flex items-center justify-between ${variant === "wizard" ? "rounded-xl bg-muted/50 px-4 py-3" : ""}`}>
+            <Label htmlFor="apply-before-tax" className="text-sm font-medium">
+              Apply Before Tax
+            </Label>
             <Switch
-              id="discount-enabled"
-              checked={discountSettings.enabled}
+              id="apply-before-tax"
+              checked={discountSettings.applyBeforeTax}
               onCheckedChange={(checked) =>
-                updateSettings({ ...discountSettings, enabled: checked })
+                updateSettings({ ...discountSettings, applyBeforeTax: checked })
               }
             />
           </div>
+        </>
+      )}
+    </div>
+  )
 
-          {discountSettings.enabled && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="discount-type">Discount Type</Label>
-                <Select
-                  value={discountSettings.type}
-                  onValueChange={(value: "percentage" | "amount") =>
-                    updateSettings({ ...discountSettings, type: value })
-                  }
-                >
-                  <SelectTrigger id="discount-type">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="percentage">Percentage (%)</SelectItem>
-                    <SelectItem value="amount">Amount ($)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+  if (inDialog || variant === "wizard") {
+    return <div className={variant === "wizard" ? "space-y-6" : ""}>{content}</div>
+  }
 
-              <div className="space-y-2">
-                <Label htmlFor="discount-value">
-                  {discountSettings.type === "percentage" ? "Percentage" : "Amount"}
-                </Label>
-                <div className="flex items-center gap-2">
-                  {discountSettings.type === "amount" && (
-                    <span className="text-sm text-muted-foreground">$</span>
-                  )}
-                  <Input
-                    id="discount-value"
-                    type="number"
-                    min="0"
-                    step={discountSettings.type === "percentage" ? "1" : "0.01"}
-                    value={discountSettings.value}
-                    onChange={(e) =>
-                      updateSettings({
-                        ...discountSettings,
-                        value: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                    className="w-24"
-                  />
-                  {discountSettings.type === "percentage" && (
-                    <span className="text-sm text-muted-foreground">%</span>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="apply-before-tax" className="font-medium">
-                  Apply Before Tax
-                </Label>
-                <Switch
-                  id="apply-before-tax"
-                  checked={discountSettings.applyBeforeTax}
-                  onCheckedChange={(checked) =>
-                    updateSettings({ ...discountSettings, applyBeforeTax: checked })
-                  }
-                />
-              </div>
-            </>
-          )}
-        </div>
-      </CardContent>
+  return (
+    <Card className="shadow-lg rounded-2xl bg-gradient-to-br from-primary/5 to-card border border-primary/10">
+      <CardContent className="pt-6">{content}</CardContent>
     </Card>
   )
 } 

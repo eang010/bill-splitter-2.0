@@ -1,8 +1,10 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import NameList from "@/components/name-list"
 import TaxesComponent from "@/components/taxes-component"
 import DiscountComponent, { DiscountSettings } from "@/components/discount-component"
@@ -31,6 +33,7 @@ export default function HomePage() {
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(true)
   const [taxSettings, setTaxSettings] = useState(defaultTaxSettings)
   const [discountSettings, setDiscountSettings] = useState(defaultDiscountSettings)
+  const [nameCount, setNameCount] = useState(0)
 
   useEffect(() => {
     try {
@@ -78,6 +81,33 @@ export default function HomePage() {
     } else {
       const discountEvent = new CustomEvent("updateDiscountSettings", { detail: defaultDiscountSettings })
       document.dispatchEvent(discountEvent)
+    }
+  }, [])
+
+  useEffect(() => {
+    const loadNames = () => {
+      const savedNames = localStorage.getItem("billSplitterNames")
+      if (savedNames) {
+        setNameCount(JSON.parse(savedNames).length)
+      } else {
+        setNameCount(0)
+      }
+    }
+
+    loadNames()
+
+    const handleNamesUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<string[]>
+      if (customEvent.detail) {
+        setNameCount(customEvent.detail.length)
+      } else {
+        loadNames()
+      }
+    }
+
+    document.addEventListener("updateNames", handleNamesUpdate)
+    return () => {
+      document.removeEventListener("updateNames", handleNamesUpdate)
     }
   }, [])
 
@@ -143,80 +173,162 @@ export default function HomePage() {
     }
   }
 
-  const stepTitle = currentStep === 2 ? "Who is splitting?" : currentStep === 3 ? "Taxes & Charges" : "Discount"
+  const stepCopy = {
+    1: {
+      title: "Upload your receipt",
+      subtitle: "Add a photo to extract items automatically.",
+    },
+    2: {
+      title: "Who is splitting?",
+      subtitle: "Add everyone sharing this bill.",
+    },
+    3: {
+      title: "Taxes & charges",
+      subtitle: "Adjust GST and service charge settings.",
+    },
+    4: {
+      title: "Discount",
+      subtitle: "Apply a discount if needed.",
+    },
+  }
+
+  const isContinueDisabled = currentStep === 2 && nameCount === 0
 
   return (
     <main className="min-h-screen bg-background">
       <MoneyAnimation isVisible={isProcessing} />
-      <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 pb-10">
-        <div className="pt-6">
-          <div className="flex items-center justify-center gap-2">
+      <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 pb-10">
+        <div className="pt-10">
+          <div className="flex items-center justify-center">
             {Array.from({ length: 4 }).map((_, index) => {
               const stepNumber = index + 1
-              const isComplete = stepNumber <= currentStep
+              const isComplete = stepNumber < currentStep
+              const isCurrent = stepNumber === currentStep
               return (
-                <span
-                  key={stepNumber}
-                  className={`h-2.5 w-2.5 rounded-full border ${
-                    isComplete ? "border-primary bg-primary" : "border-muted-foreground/40"
-                  }`}
-                />
+                <div key={stepNumber} className="flex items-center">
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full border transition-all duration-300 ${
+                      isCurrent
+                        ? "border-primary bg-primary scale-125"
+                        : isComplete
+                          ? "border-primary/40 bg-primary/40"
+                          : "border-muted-foreground/40"
+                    }`}
+                  />
+                  {stepNumber < 4 && (
+                    <span
+                      className={`mx-2 h-px w-8 transition-colors duration-300 ${
+                        isComplete ? "bg-primary/40" : "bg-muted-foreground/30"
+                      }`}
+                    />
+                  )}
+                </div>
               )
             })}
           </div>
         </div>
 
         {currentStep > 1 && (
-          <div className="mt-6 flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleBack}>
+          <div className="relative mt-10 text-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-0 top-1/2 h-9 w-9 -translate-y-1/2 rounded-full text-muted-foreground hover:text-foreground"
+              onClick={handleBack}
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-lg font-semibold">{stepTitle}</h1>
+            <h2 className="text-2xl font-bold text-foreground">
+              {stepCopy[currentStep as keyof typeof stepCopy].title}
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {stepCopy[currentStep as keyof typeof stepCopy].subtitle}
+            </p>
           </div>
         )}
 
-        <div className={`flex flex-1 flex-col ${currentStep === 1 ? "justify-center" : "pt-6"}`}>
+        <div
+          key={currentStep}
+          className={`flex flex-1 flex-col animate-in fade-in-0 duration-300 ${
+            currentStep === 1 ? "justify-center pt-8" : "pt-8"
+          }`}
+        >
           {currentStep === 1 && (
-            <div className="flex flex-1 flex-col items-center justify-center text-center">
-              <h1 className="text-2xl font-semibold">Upload Receipt</h1>
-              <div className="mt-6 w-full rounded-3xl border border-dashed border-muted-foreground/30 bg-card/60 p-10 shadow-sm">
-                <ReceiptProcessor
-                  onReceiptProcessed={handleReceiptProcessed}
-                  isDialogOpen={isUploadDialogOpen}
-                  onDialogChange={setIsUploadDialogOpen}
-                  onProcessingChange={setIsProcessing}
-                  isProcessing={isProcessing}
-                />
+            <div className="w-full">
+              <div className="mb-6 text-left">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight relative inline-block text-left">
+                  <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
+                    Bill
+                  </span>{" "}
+                  <span className="animate-splitter">
+                    {"Splitter".split("").map((letter, index) => (
+                      <span
+                        key={index}
+                        style={{
+                          "--delay": 6 - index,
+                          "--position": index,
+                        } as React.CSSProperties}
+                        className="font-black tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent drop-shadow-sm"
+                      >
+                        {letter}
+                      </span>
+                    ))}
+                  </span>
+                  <div className="absolute -bottom-2 left-0 w-1/3 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
+                </h1>
+                <p className="mt-4 text-sm text-muted-foreground">
+                  {stepCopy[1].subtitle}
+                </p>
               </div>
+              <ReceiptProcessor
+                variant="dropzone"
+                onReceiptProcessed={handleReceiptProcessed}
+                isDialogOpen={isUploadDialogOpen}
+                onDialogChange={setIsUploadDialogOpen}
+                onProcessingChange={setIsProcessing}
+                isProcessing={isProcessing}
+              />
             </div>
           )}
 
           {currentStep === 2 && (
-            <div className="space-y-6">
+            <div className="flex flex-1 flex-col">
               <NameList inDialog />
-              <Button className="w-full" onClick={handleContinue}>
+              <Button
+                className="mt-auto h-12 w-full rounded-xl text-base"
+                onClick={handleContinue}
+                disabled={isContinueDisabled}
+              >
                 Continue
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
 
           {currentStep === 3 && (
-            <div className="space-y-6">
-              <TaxesComponent taxSettings={taxSettings} updateTaxSettings={updateTaxSettings} />
-              <Button className="w-full" onClick={handleContinue}>
+            <div className="flex flex-1 flex-col">
+              <TaxesComponent
+                variant="wizard"
+                taxSettings={taxSettings}
+                updateTaxSettings={updateTaxSettings}
+              />
+              <Button className="mt-auto h-12 w-full rounded-xl text-base" onClick={handleContinue}>
                 Continue
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
 
           {currentStep === 4 && (
-            <div className="space-y-6">
+            <div className="flex flex-1 flex-col">
               <DiscountComponent
+                variant="wizard"
                 discountSettings={discountSettings}
                 updateDiscountSettings={updateDiscountSettings}
               />
-              <Button className="w-full" onClick={handleContinue}>
+              <Button className="mt-auto h-12 w-full rounded-xl text-base" onClick={handleContinue}>
                 Continue
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
