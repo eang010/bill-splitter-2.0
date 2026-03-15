@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useId } from "react"
 import { Button } from "@/components/ui/button"
-import { Upload, Loader2 } from "lucide-react"
+import { Image, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 
 interface ReceiptProcessorProps {
@@ -111,7 +111,7 @@ export default function ReceiptProcessor({
               {isProcessing ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Upload className="h-5 w-5" />
+                <Image className="h-5 w-5" />
               )}
             </span>
             <div className="space-y-1">
@@ -134,7 +134,7 @@ export default function ReceiptProcessor({
               </>
             ) : (
               <>
-                <Upload className="mr-2 h-4 w-4" />
+                <Image className="mr-2 h-4 w-4" />
                 Upload Receipt
               </>
             )}

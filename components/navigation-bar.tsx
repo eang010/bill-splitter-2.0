@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Users, DollarSign, LogOut, Plus, HelpCircle, Percent, History, Linkedin } from "lucide-react"
+import { Users, DollarSign, LogOut, Plus, HelpCircle, Percent, History, LinkedinIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { usePathname, useRouter } from "next/navigation"
@@ -300,7 +300,7 @@ export default function NavigationBar() {
               className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
             >
               Emily
-              <Linkedin className="h-2.5 w-2.5" />
+              <LinkedinIcon className="h-2.5 w-2.5" />
             </Link>
           </p>
         </div>

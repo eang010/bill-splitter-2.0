@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ArrowRight, History } from "lucide-react"
+import { ArrowLeft, ArrowRight, History, LinkedinIcon } from "lucide-react"
 import NameList from "@/components/name-list"
 import TaxesComponent from "@/components/taxes-component"
 import DiscountComponent, { DiscountSettings } from "@/components/discount-component"
@@ -343,6 +343,20 @@ export default function HomePage() {
               </Button>
             </div>
           )}
+        </div>
+        <div className="mt-10 text-center text-[10px] text-muted-foreground/70">
+          <p className="flex items-center justify-center gap-1">
+            Made with ❤️ by{" "}
+            <Link
+              href="https://www.linkedin.com/in/emilyang20/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
+            >
+              Emily
+              <LinkedinIcon className="h-2.5 w-2.5" />
+            </Link>
+          </p>
         </div>
       </div>
     </main>
