@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Users, DollarSign, LogOut, Plus, HelpCircle, Percent, History, LinkedinIcon } from "lucide-react"
+import { Users, DollarSign, LogOut, Plus, HelpCircle, Percent, History, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { usePathname, useRouter } from "next/navigation"
@@ -36,6 +36,7 @@ export default function NavigationBar() {
   const [isDiscountDialogOpen, setIsDiscountDialogOpen] = useState(false)
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
+  const [isMoreDialogOpen, setIsMoreDialogOpen] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [taxSettings, setTaxSettings] = useState(defaultTaxSettings)
   const [discountSettings, setDiscountSettings] = useState(defaultDiscountSettings)
@@ -148,147 +149,284 @@ export default function NavigationBar() {
     <>
       <MoneyAnimation isVisible={isProcessing} />
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        <nav className="flex items-center justify-between border-t bg-background px-4 py-2">
-          <div className="flex items-center gap-2">
-            <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  id="names-button"
-                  variant={isNamesDialogOpen ? "default" : "ghost"}
-                  size="icon"
-                  className={`h-12 w-12 ${isNamesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
-                  onClick={() => setIsNamesDialogOpen(true)}
-                >
-                  <Users className="h-6 w-6" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Manage People</DialogTitle>
-                </DialogHeader>
-                <NameList inDialog />
-              </DialogContent>
-            </Dialog>
+        {pathname === "/bills" ? (
+          <div className="mx-auto w-full max-w-md px-4 pb-4">
+            <nav className="flex items-center justify-between gap-3">
+              <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    id="upload-receipt-button"
+                    variant="ghost"
+                    size="icon"
+                    className={`h-12 w-12 rounded-full border bg-background/90 shadow-lg backdrop-blur ${
+                      isUploadDialogOpen ? "text-primary" : "text-muted-foreground"
+                    }`}
+                  >
+                    <Plus className="h-5 w-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Upload</DialogTitle>
+                  </DialogHeader>
+                  <ReceiptProcessor
+                    onReceiptProcessed={handleReceiptProcessed}
+                    isDialogOpen={isUploadDialogOpen}
+                    onDialogChange={setIsUploadDialogOpen}
+                    onProcessingChange={setIsProcessing}
+                    isProcessing={isProcessing}
+                  />
+                </DialogContent>
+              </Dialog>
 
-            <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  id="taxes-button"
-                  variant={isTaxesDialogOpen ? "default" : "ghost"}
-                  size="icon"
-                  className={`h-12 w-12 ${isTaxesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
-                  onClick={() => setIsTaxesDialogOpen(true)}
-                >
-                  <DollarSign className="h-6 w-6" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Taxes</DialogTitle>
-                </DialogHeader>
-                <TaxesComponent
-                  inDialog
-                  taxSettings={taxSettings}
-                  updateTaxSettings={updateTaxSettings}
-                />
-              </DialogContent>
-            </Dialog>
-
-            <Dialog open={isDiscountDialogOpen} onOpenChange={setIsDiscountDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  id="discount-button"
-                  variant={isDiscountDialogOpen ? "default" : "ghost"}
-                  size="icon"
-                  className={`h-12 w-12 ${isDiscountDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
-                  onClick={() => setIsDiscountDialogOpen(true)}
-                >
-                  <Percent className="h-6 w-6" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Discount</DialogTitle>
-                </DialogHeader>
-                <DiscountComponent
-                  inDialog
-                  discountSettings={discountSettings}
-                  updateDiscountSettings={updateDiscountSettings}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                id="upload-receipt-button"
-                variant={isUploadDialogOpen ? "default" : "default"}
-                size="icon"
-                className={`h-12 w-12 rounded-full ${isUploadDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
-              >
-                <Plus className="h-6 w-6" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Upload</DialogTitle>
-              </DialogHeader>
-              <ReceiptProcessor
-                onReceiptProcessed={handleReceiptProcessed}
-                isDialogOpen={isUploadDialogOpen}
-                onDialogChange={setIsUploadDialogOpen}
-                onProcessingChange={setIsProcessing}
-                isProcessing={isProcessing}
-              />
-            </DialogContent>
-          </Dialog>
-
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button
-              id="help-button"
-              variant="ghost"
-              size="icon"
-              className="h-12 w-12"
-              onClick={handleHelpClick}
-            >
-              <HelpCircle className="h-6 w-6" />
-            </Button>
-
-            <Dialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-12 w-12"
-                  onClick={() => setIsLogoutDialogOpen(true)}
-                >
-                  <LogOut className="h-6 w-6" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Logout</DialogTitle>
-                </DialogHeader>
-                <div className="flex flex-col gap-4">
-                  <p>Are you sure you want to logout?</p>
-                  <div className="flex justify-end gap-2">
+              <div className="flex flex-1 items-center justify-between rounded-full border bg-background/90 px-2 py-1 shadow-lg backdrop-blur">
+                <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
+                  <DialogTrigger asChild>
                     <Button
-                      variant="outline"
-                      onClick={() => setIsLogoutDialogOpen(false)}
+                      id="names-button"
+                      variant="ghost"
+                      className={`h-10 flex-1 flex-col gap-1 rounded-full px-2 text-[11px] ${
+                        isNamesDialogOpen ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                      }`}
+                      onClick={() => setIsNamesDialogOpen(true)}
                     >
-                      Cancel
+                      <Users className="h-4 w-4" />
+                      People
                     </Button>
-                    <Button variant="default" onClick={handleLogout}>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Manage People</DialogTitle>
+                    </DialogHeader>
+                    <NameList inDialog />
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      id="taxes-button"
+                      variant="ghost"
+                      className={`h-10 flex-1 flex-col gap-1 rounded-full px-2 text-[11px] ${
+                        isTaxesDialogOpen ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                      }`}
+                      onClick={() => setIsTaxesDialogOpen(true)}
+                    >
+                      <DollarSign className="h-4 w-4" />
+                      Taxes
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Taxes</DialogTitle>
+                    </DialogHeader>
+                    <TaxesComponent
+                      inDialog
+                      taxSettings={taxSettings}
+                      updateTaxSettings={updateTaxSettings}
+                    />
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={isDiscountDialogOpen} onOpenChange={setIsDiscountDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      id="discount-button"
+                      variant="ghost"
+                      className={`h-10 flex-1 flex-col gap-1 rounded-full px-2 text-[11px] ${
+                        isDiscountDialogOpen ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                      }`}
+                      onClick={() => setIsDiscountDialogOpen(true)}
+                    >
+                      <Percent className="h-4 w-4" />
+                      Discount
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Discount</DialogTitle>
+                    </DialogHeader>
+                    <DiscountComponent
+                      inDialog
+                      discountSettings={discountSettings}
+                      updateDiscountSettings={updateDiscountSettings}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <Dialog open={isMoreDialogOpen} onOpenChange={setIsMoreDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-12 w-12 rounded-full border bg-background/90 shadow-lg backdrop-blur ${
+                      isMoreDialogOpen ? "text-primary" : "text-muted-foreground"
+                    }`}
+                    onClick={() => setIsMoreDialogOpen(true)}
+                  >
+                    <MoreHorizontal className="h-5 w-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>More</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <span>Theme</span>
+                      <ThemeToggle />
+                    </div>
+                    <Button variant="outline" onClick={handleHelpClick}>
+                      Help
+                    </Button>
+                    <Button variant="destructive" onClick={() => setIsLogoutDialogOpen(true)}>
                       Logout
                     </Button>
                   </div>
-                </div>
+                </DialogContent>
+              </Dialog>
+            </nav>
+          </div>
+        ) : (
+          <nav className="flex items-center justify-between border-t bg-background px-4 py-2">
+            <div className="flex items-center gap-2">
+              <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    id="names-button"
+                    variant={isNamesDialogOpen ? "default" : "ghost"}
+                    size="icon"
+                    className={`h-12 w-12 ${isNamesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                    onClick={() => setIsNamesDialogOpen(true)}
+                  >
+                    <Users className="h-6 w-6" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Manage People</DialogTitle>
+                  </DialogHeader>
+                  <NameList inDialog />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={isTaxesDialogOpen} onOpenChange={setIsTaxesDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    id="taxes-button"
+                    variant={isTaxesDialogOpen ? "default" : "ghost"}
+                    size="icon"
+                    className={`h-12 w-12 ${isTaxesDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                    onClick={() => setIsTaxesDialogOpen(true)}
+                  >
+                    <DollarSign className="h-6 w-6" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Taxes</DialogTitle>
+                  </DialogHeader>
+                  <TaxesComponent
+                    inDialog
+                    taxSettings={taxSettings}
+                    updateTaxSettings={updateTaxSettings}
+                  />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={isDiscountDialogOpen} onOpenChange={setIsDiscountDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    id="discount-button"
+                    variant={isDiscountDialogOpen ? "default" : "ghost"}
+                    size="icon"
+                    className={`h-12 w-12 ${isDiscountDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                    onClick={() => setIsDiscountDialogOpen(true)}
+                  >
+                    <Percent className="h-6 w-6" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Discount</DialogTitle>
+                  </DialogHeader>
+                  <DiscountComponent
+                    inDialog
+                    discountSettings={discountSettings}
+                    updateDiscountSettings={updateDiscountSettings}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  id="upload-receipt-button"
+                  variant={isUploadDialogOpen ? "default" : "default"}
+                  size="icon"
+                  className={`h-12 w-12 rounded-full ${isUploadDialogOpen ? "bg-primary text-primary-foreground" : ""}`}
+                >
+                  <Plus className="h-6 w-6" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Upload</DialogTitle>
+                </DialogHeader>
+                <ReceiptProcessor
+                  onReceiptProcessed={handleReceiptProcessed}
+                  isDialogOpen={isUploadDialogOpen}
+                  onDialogChange={setIsUploadDialogOpen}
+                  onProcessingChange={setIsProcessing}
+                  isProcessing={isProcessing}
+                />
               </DialogContent>
             </Dialog>
-          </div>
-        </nav>
+
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button
+                id="help-button"
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12"
+                onClick={handleHelpClick}
+              >
+                <HelpCircle className="h-6 w-6" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12"
+                onClick={() => setIsLogoutDialogOpen(true)}
+              >
+                <LogOut className="h-6 w-6" />
+              </Button>
+            </div>
+          </nav>
+        )}
+
+        <Dialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Logout</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">
+              <p>Are you sure you want to logout?</p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsLogoutDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button variant="default" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <div className="text-center py-1 pb-4 text-[10px] text-muted-foreground/70 bg-background border-t">
           <p className="flex items-center justify-center gap-1">
@@ -300,7 +438,14 @@ export default function NavigationBar() {
               className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
             >
               Emily
-              <LinkedinIcon className="h-2.5 w-2.5" />
+              <svg
+                className="h-2.5 w-2.5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0.22 8.17h4.56V24H0.22V8.17zM7.98 8.17h4.38v2.16h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.48 3.04 5.48 6.99V24h-4.56v-6.88c0-1.64-.03-3.75-2.28-3.75-2.28 0-2.63 1.78-2.63 3.63V24H7.98V8.17z" />
+              </svg>
             </Link>
           </p>
         </div>
