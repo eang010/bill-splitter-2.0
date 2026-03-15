@@ -158,7 +158,7 @@ export default function NavigationBar() {
                     id="upload-receipt-button"
                     variant="ghost"
                     size="icon"
-                    className={`h-12 w-12 rounded-full border bg-background/90 shadow-lg backdrop-blur ${
+                    className={`h-12 w-12 rounded-full border bg-background/60 shadow-lg backdrop-blur ${
                       isUploadDialogOpen ? "text-primary" : "text-muted-foreground"
                     }`}
                   >
@@ -179,7 +179,7 @@ export default function NavigationBar() {
                 </DialogContent>
               </Dialog>
 
-              <div className="flex flex-1 items-center justify-between rounded-full border bg-background/90 px-2 py-1 shadow-lg backdrop-blur">
+              <div className="flex flex-1 items-center justify-between rounded-full border bg-background/60 px-2 py-1 shadow-lg backdrop-blur">
                 <Dialog open={isNamesDialogOpen} onOpenChange={setIsNamesDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
@@ -260,7 +260,7 @@ export default function NavigationBar() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`h-12 w-12 rounded-full border bg-background/90 shadow-lg backdrop-blur ${
+                    className={`h-12 w-12 rounded-full border bg-background/60 shadow-lg backdrop-blur ${
                       isMoreDialogOpen ? "text-primary" : "text-muted-foreground"
                     }`}
                     onClick={() => setIsMoreDialogOpen(true)}
