@@ -4,13 +4,14 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, History } from "lucide-react"
 import NameList from "@/components/name-list"
 import TaxesComponent from "@/components/taxes-component"
 import DiscountComponent, { DiscountSettings } from "@/components/discount-component"
 import ReceiptProcessor from "@/components/receipt-processor"
 import MoneyAnimation from "@/components/money-animation"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 const defaultTaxSettings = {
   gst: 9,
@@ -200,8 +201,8 @@ export default function HomePage() {
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 pb-10">
         <div className="pt-10">
           {currentStep === 1 && (
-            <div className="text-left">
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight relative inline-block text-left">
+            <div className="relative">
+              <h1 className="pr-12 text-2xl sm:text-3xl font-extrabold tracking-tight relative inline-block text-left">
                 <span className="font-light tracking-wider bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent drop-shadow-sm">
                   Bill
                 </span>{" "}
@@ -221,6 +222,13 @@ export default function HomePage() {
                 </span>
                 <div className="absolute -bottom-2 left-0 w-1/3 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
               </h1>
+              <div className="absolute right-0 top-0 flex items-center gap-2">
+                <Link href="/bills">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <History className="h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
             </div>
           )}
           {currentStep > 1 && (
