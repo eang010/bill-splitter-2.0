@@ -245,9 +245,10 @@ export default function BillOverviewComponent() {
 
   const handleShare = async () => {
     // Format the payment summary
-    const summary = personTotals.map(person => 
-      `${person.name}: $${person.total.toFixed(2)}`
-    ).join('\n');
+    const summary = personTotals.map(person => {
+      const itemsList = person.items.map(item => `  - ${item.name}`).join('\n');
+      return `${person.name}: $${person.total.toFixed(2)}\n${itemsList}`;
+    }).join('\n\n');
     
     const payToInfo = payTo ? `\n\nPay to: ${payTo}` : '';
     const fullSummary = `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}${payToInfo}`;
