@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
-import { Share2 } from "lucide-react"
+import { Share2, ChevronsDown, ChevronsUp } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 
 interface BillItem {
@@ -70,7 +70,22 @@ export default function BillOverviewComponent() {
   const [grandTotal, setGrandTotal] = useState(0)
   const [names, setNames] = useState<string[]>([])
   const [payTo, setPayTo] = useState<string>("")
+  const [expandedPeople, setExpandedPeople] = useState<string[]>([])
   const { toast } = useToast()
+
+  const allPersonIds = personTotals.map((_, index) => `person-${index}`)
+  const allRowsExpanded =
+    allPersonIds.length > 0 &&
+    expandedPeople.length === allPersonIds.length &&
+    allPersonIds.every((id) => expandedPeople.includes(id))
+
+  const toggleExpandAllPaymentRows = () => {
+    if (allRowsExpanded) {
+      setExpandedPeople([])
+    } else {
+      setExpandedPeople([...allPersonIds])
+    }
+  }
 
   useEffect(() => {
     // Load names from localStorage
@@ -153,6 +168,11 @@ export default function BillOverviewComponent() {
   useEffect(() => {
     calculateTotals()
   }, [billItems, taxSettings, discountSettings])
+
+  useEffect(() => {
+    const validIds = new Set(personTotals.map((_, i) => `person-${i}`))
+    setExpandedPeople((prev) => prev.filter((id) => validIds.has(id)))
+  }, [personTotals])
 
   const calculateTotals = () => {
     // Get all unique names from bill items
@@ -297,20 +317,37 @@ export default function BillOverviewComponent() {
         className="shadow-lg border-t-4 border-t-primary bg-gradient-to-br from-card to-card/90 transition-colors duration-200"
       >
         <CardHeader className="bg-muted/30 pb-2">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <CardTitle className="text-xl font-bold shrink-0 bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
               Payment Summary
             </CardTitle>
             {personTotals.length > 0 && (
-              <Button
-                variant="default"
-                size="sm"
-                className="h-6 flex items-center gap-1 px-2 text-xs"
-                onClick={handleShare}
-              >
-                <Share2 className="h-3 w-3" />
-                Share
-              </Button>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 flex items-center gap-1.5 px-3 text-xs"
+                  onClick={toggleExpandAllPaymentRows}
+                >
+                  {allRowsExpanded ? (
+                    <ChevronsUp className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronsDown className="h-3.5 w-3.5" />
+                  )}
+                  {allRowsExpanded ? "Collapse all" : "Expand all"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  className="h-9 flex items-center gap-1.5 px-3 text-xs"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                  Share
+                </Button>
+              </div>
             )}
           </div>
         </CardHeader>
@@ -332,7 +369,12 @@ export default function BillOverviewComponent() {
               </div>
             )}
             {personTotals.length > 0 ? (
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion
+                type="multiple"
+                className="w-full"
+                value={expandedPeople}
+                onValueChange={setExpandedPeople}
+              >
                 {personTotals.map((person, index) => (
                   <AccordionItem 
                     key={person.name} 
