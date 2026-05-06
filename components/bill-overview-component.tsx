@@ -271,7 +271,7 @@ export default function BillOverviewComponent() {
     }).join('\n\n');
     
     const payToInfo = payTo ? `\n\nPay to: ${payTo}` : '';
-    const fullSummary = `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}${payToInfo}`;
+    const fullSummary = `\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}${payToInfo}`;
 
     // Try to use Web Share API
     if (navigator.share) {
