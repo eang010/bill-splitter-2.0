@@ -278,7 +278,8 @@ export default function BillOverviewComponent() {
   }
 
   const buildShareText = (includeBreakdown: boolean) => {
-    const summary = personTotals.map((person) => formatPersonShareBlock(person, includeBreakdown)).join("\n\n")
+    const personSeparator = includeBreakdown ? "\n\n" : "\n"
+    const summary = personTotals.map((person) => formatPersonShareBlock(person, includeBreakdown)).join(personSeparator)
     const payToInfo = payTo ? `\n\nPay to: ${payTo}` : ""
     return `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}${payToInfo}`
   }
