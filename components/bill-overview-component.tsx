@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import { Share2, ChevronsDown, ChevronsUp } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 
@@ -71,6 +73,7 @@ export default function BillOverviewComponent() {
   const [names, setNames] = useState<string[]>([])
   const [payTo, setPayTo] = useState<string>("")
   const [expandedPeople, setExpandedPeople] = useState<string[]>([])
+  const [includeBreakdownInShare, setIncludeBreakdownInShare] = useState(false)
   const { toast } = useToast()
 
   const allPersonIds = personTotals.map((_, index) => `person-${index}`)
@@ -263,22 +266,32 @@ export default function BillOverviewComponent() {
     setGrandTotal(grandTotalAmount)
   }
 
+  const formatPersonShareBlock = (person: PersonTotal, includeBreakdown: boolean) => {
+    if (!includeBreakdown) {
+      return `${person.name}: $${person.total.toFixed(2)}`
+    }
+
+    const itemsList = person.items.map((item) => `  - ${item.name}: $${item.amount.toFixed(2)}`).join("\n")
+    return itemsList
+      ? `${person.name}: $${person.total.toFixed(2)}\n${itemsList}`
+      : `${person.name}: $${person.total.toFixed(2)}`
+  }
+
+  const buildShareText = (includeBreakdown: boolean) => {
+    const summary = personTotals.map((person) => formatPersonShareBlock(person, includeBreakdown)).join("\n\n")
+    const payToInfo = payTo ? `\n\nPay to: ${payTo}` : ""
+    return `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}${payToInfo}`
+  }
+
   const handleShare = async () => {
-    // Format the payment summary
-    const summary = personTotals.map(person => {
-      const itemsList = person.items.map(item => `  - ${item.name}`).join('\n');
-      return `${person.name}: $${person.total.toFixed(2)}\n${itemsList}`;
-    }).join('\n\n');
-    
-    const payToInfo = payTo ? `\n\nPay to: ${payTo}` : '';
-    const fullSummary = `Bill Split Summary\n\n${summary}\n\nTotal: $${grandTotal.toFixed(2)}${payToInfo}`;
+    const shareText = buildShareText(includeBreakdownInShare)
 
     // Try to use Web Share API
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Bill Split Summary',
-          text: fullSummary,
+          text: shareText,
         });
         toast({
           title: "Shared successfully!",
@@ -286,11 +299,11 @@ export default function BillOverviewComponent() {
         });
       } catch (error) {
         // Fall back to clipboard if user cancels share
-        await copyToClipboard(fullSummary);
+        await copyToClipboard(shareText);
       }
     } else {
       // Fall back to clipboard
-      await copyToClipboard(fullSummary);
+      await copyToClipboard(shareText);
     }
   };
 
@@ -353,6 +366,21 @@ export default function BillOverviewComponent() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            {personTotals.length > 0 && (
+              <div className="flex items-center gap-2 bg-muted/20 p-3 rounded-lg">
+                <Checkbox
+                  id="include-breakdown-in-share"
+                  checked={includeBreakdownInShare}
+                  onCheckedChange={(checked) => setIncludeBreakdownInShare(checked === true)}
+                />
+                <Label
+                  htmlFor="include-breakdown-in-share"
+                  className="text-sm font-medium cursor-pointer leading-none"
+                >
+                  Include breakdown in share
+                </Label>
+              </div>
+            )}
             {personTotals.length > 0 && (
               <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-lg">
                 <span className="font-medium whitespace-nowrap">Pay to:</span>
