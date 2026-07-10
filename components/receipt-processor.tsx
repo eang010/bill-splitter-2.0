@@ -14,62 +14,6 @@ interface ReceiptProcessorProps {
   variant?: "button" | "dropzone"
 }
 
-/** Best-effort save so the user keeps a copy (Downloads / save dialog / share). */
-async function saveImageToDevice(file: File): Promise<void> {
-  const baseName = `receipt-${Date.now()}`
-  const ext =
-    file.name.split(".").pop()?.toLowerCase() ||
-    (file.type.includes("png") ? "png" : "jpg")
-
-  try {
-    if (typeof window !== "undefined" && "showSaveFilePicker" in window) {
-      const picker = window as Window & {
-        showSaveFilePicker: (opts: {
-          suggestedName: string
-          types?: { description: string; accept: Record<string, string[]> }[]
-        }) => Promise<FileSystemFileHandle>
-      }
-      const handle = await picker.showSaveFilePicker({
-        suggestedName: `${baseName}.${ext}`,
-        types: [
-          {
-            description: "Image",
-            accept: { "image/*": [".jpg", ".jpeg", ".png", ".webp", ".heic"] },
-          },
-        ],
-      })
-      const writable = await handle.createWritable()
-      await writable.write(await file.arrayBuffer())
-      await writable.close()
-      return
-    }
-  } catch {
-    // User cancelled or API unavailable
-  }
-
-  try {
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: "Receipt photo",
-      })
-      return
-    }
-  } catch {
-    // Share cancelled or failed
-  }
-
-  const url = URL.createObjectURL(file)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = `${baseName}.${ext}`
-  a.rel = "noopener"
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
-}
-
 export default function ReceiptProcessor({
   onReceiptProcessed,
   isDialogOpen,
@@ -87,18 +31,11 @@ export default function ReceiptProcessor({
 
   useEffect(() => {
     const handleFileSelect = async (event: Event) => {
-      const customEvent = event as CustomEvent<{ file: File; fromCamera?: boolean }>
+      const customEvent = event as CustomEvent<{ file: File }>
       if (!customEvent.detail?.file) return
 
       onProcessingChange(true)
       const file = customEvent.detail.file
-      const fromCamera = customEvent.detail.fromCamera === true
-
-      if (fromCamera) {
-        void saveImageToDevice(file).catch(() => {
-          /* non-fatal */
-        })
-      }
 
       try {
         const formData = new FormData()
@@ -144,9 +81,9 @@ export default function ReceiptProcessor({
     }
   }, [onReceiptProcessed, toast, onDialogChange, onProcessingChange])
 
-  const dispatchFile = (file: File, fromCamera: boolean) => {
+  const dispatchFile = (file: File) => {
     const event = new CustomEvent("receiptFileSelected", {
-      detail: { file, fromCamera },
+      detail: { file },
     })
     document.dispatchEvent(event)
   }
@@ -154,7 +91,7 @@ export default function ReceiptProcessor({
   const handleLibraryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      dispatchFile(file, false)
+      dispatchFile(file)
     }
     e.target.value = ""
   }
@@ -162,7 +99,7 @@ export default function ReceiptProcessor({
   const handleCameraChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      dispatchFile(file, true)
+      dispatchFile(file)
     }
     e.target.value = ""
   }
